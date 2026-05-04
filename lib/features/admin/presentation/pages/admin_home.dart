@@ -36,7 +36,14 @@ class _AdminHomeState extends State<AdminHome> {
       child: Scaffold(
         extendBody: false,
         appBar: AppBar(
-          title: Text(titles[currentIndex]),
+          title: Text(
+            'الطريق الأخضر',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 25,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
           centerTitle: true,
           backgroundColor: Colors.green,
           actions: [
@@ -50,15 +57,30 @@ class _AdminHomeState extends State<AdminHome> {
           ],
         ),
 
-        body: Container(
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              colors: [Color(0xffe8f5e9), Colors.white],
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
+        body: Column(
+          children: [
+            SizedBox(
+              height: 40,
+              child: Row(
+                children: [
+                  Image.asset('assets/logo1.jpeg'),
+                  Image.asset('assets/logo2.jpeg'),
+                ],
+              ),
             ),
-          ),
-          child: IndexedStack(index: currentIndex, children: pages),
+            Expanded(
+              child: Container(
+                decoration: const BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [Color(0xffe8f5e9), Colors.white],
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                  ),
+                ),
+                child: IndexedStack(index: currentIndex, children: pages),
+              ),
+            ),
+          ],
         ),
 
         floatingActionButton: FloatingActionButton(

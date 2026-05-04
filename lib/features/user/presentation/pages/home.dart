@@ -23,18 +23,45 @@ class _UserHomeState extends State<UserHome> {
     return Directionality(
       textDirection: TextDirection.rtl,
       child: Scaffold(
+        appBar: AppBar(
+          backgroundColor: Colors.green,
+          title: Text(
+            titles[currentIndex],
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 25,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          centerTitle: true,
+        ),
         resizeToAvoidBottomInset: false,
         backgroundColor: Colors.grey[100],
         extendBody: true,
-        body: Container(
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              colors: [Color(0xffe8f5e9), Colors.white],
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
+        body: Column(
+          children: [
+            SizedBox(
+              height: 40,
+              child: Row(
+                children: [
+                  Image.asset('assets/logo1.jpeg'),
+                  Image.asset('assets/logo2.jpeg'),
+                ],
+              ),
             ),
-          ),
-          child: IndexedStack(index: currentIndex, children: pages),
+            Expanded(
+              child: Container(
+                decoration: const BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [Color(0xffe8f5e9), Colors.white],
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                  ),
+                ),
+                child: IndexedStack(index: currentIndex, children: pages),
+              ),
+            ),
+          ],
         ),
 
         floatingActionButton: FloatingActionButton(

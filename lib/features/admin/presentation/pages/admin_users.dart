@@ -6,6 +6,8 @@ import 'package:share_plus/share_plus.dart';
 import '../../../../core/widgets/app_dialog.dart';
 import '../cubit/admin_cubit.dart';
 import '../cubit/admin_state.dart';
+import '../widgets/export_button.dart';
+import '../widgets/user_card.dart';
 import 'export_excel.dart';
 
 class AdminUsersPage extends StatelessWidget {
@@ -78,45 +80,6 @@ class AdminUsersPage extends StatelessWidget {
     }
   }
 
-  Widget buildExportButton(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        exportAndShare(context);
-      },
-      child: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(30),
-          gradient: const LinearGradient(
-            colors: [Colors.green, Colors.lightGreen],
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.green.withOpacity(0.35),
-              blurRadius: 10,
-              offset: const Offset(0, 5),
-            ),
-          ],
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: const [
-            Icon(Icons.download, color: Colors.white),
-            SizedBox(width: 8),
-            Text(
-              "تصدير Excel",
-              style: TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -132,46 +95,21 @@ class AdminUsersPage extends StatelessWidget {
             return const Center(child: Text("لا يوجد مستخدمين"));
           }
 
-          return Column(
+          return Stack(
             children: [
-              Expanded(
-                child: ListView.builder(
-                  itemCount: state.users.length,
-                  itemBuilder: (context, i) {
-                    final u = state.users[i];
-
-                    return Card(
-                      margin: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 6,
-                      ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(15),
-                      ),
-                      child: ListTile(
-                        leading: CircleAvatar(
-                          backgroundColor: Colors.green,
-                          child: Text(u.name[0]),
-                        ),
-                        title: Text(u.name),
-                        subtitle: Text(u.phone),
-                        trailing: Container(
-                          padding: const EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                            color: Colors.green.withOpacity(0.1),
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          child: Text("⭐ ${u.score}"),
-                        ),
-                      ),
-                    );
-                  },
-                ),
+              ListView.builder(
+                itemCount: state.users.length,
+                itemBuilder: (context, i) {
+                  final u = state.users[i];
+                  return UserCard(name: u.name, phone: u.phone, score: u.score);
+                },
               ),
-
-              // 👇 الزرار تحت الليست
-              SafeArea(child: buildExportButton(context)),
-              SizedBox(height: 20.h),
+              Positioned(
+                bottom: 30,
+                left: 20,
+                right: 20,
+                child: ExportButton(onTap: () => exportAndShare(context)),
+              ),
             ],
           );
         },

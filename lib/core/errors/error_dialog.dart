@@ -23,16 +23,46 @@ void showErrorDialog(
       title = "Authentication Error";
       break;
 
-    case ErrorType.server:
-      icon = Icons.error;
+    case ErrorType.database:
+      icon = Icons.storage;
       color = Colors.deepPurple;
-      title = "Server Error";
+      title = "Database Error";
+      break;
+
+    case ErrorType.storage:
+      icon = Icons.cloud;
+      color = Colors.blue;
+      title = "Storage Error";
+      break;
+
+    case ErrorType.timeout:
+      icon = Icons.timer_off;
+      color = Colors.amber;
+      title = "Timeout";
       break;
 
     case ErrorType.unknown:
       icon = Icons.warning;
       color = Colors.grey;
       title = "Unexpected Error";
+      break;
+
+    case ErrorType.validation:
+      icon = Icons.error_outline;
+      color = Colors.teal;
+      title = "Validation Error";
+      break;
+
+    case ErrorType.functions:
+      icon = Icons.settings;
+      color = Colors.purple;
+      title = "Server Function Error";
+      break;
+
+    case ErrorType.realtime:
+      icon = Icons.sync;
+      color = Colors.indigo;
+      title = "Realtime Error";
       break;
   }
 
@@ -55,6 +85,15 @@ void showErrorDialog(
           onPressed: () => Navigator.pop(context),
           child: const Text("OK"),
         ),
+
+        if (type == ErrorType.network)
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+              // trigger retry callback (لو ضفتها لاحقًا)
+            },
+            child: const Text("Retry"),
+          ),
       ],
     ),
   );

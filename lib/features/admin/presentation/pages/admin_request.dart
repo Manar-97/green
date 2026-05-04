@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../cubit/admin_cubit.dart';
 import '../cubit/admin_state.dart';
+import '../widgets/request_card.dart';
 
 class AdminRequestsPage extends StatelessWidget {
   const AdminRequestsPage({super.key});
@@ -43,41 +44,15 @@ class AdminRequestsPage extends StatelessWidget {
             itemBuilder: (context, i) {
               final r = state.requests[i];
 
-              return Card(
-                margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(15),
-                ),
-                child: ListTile(
-                  title: Text(
-                    r.name,
-                    style: const TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                  subtitle: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text("المخلفات: ${r.wasteType}"),
-                      Text("الهاتف: ${r.phone}"),
-                      Text("الرقم القومي: ${r.nationalId}"),
-                    ],
-                  ),
-                  trailing: ElevatedButton(
-                    onPressed: r.status.name == "approved"
-                        ? null
-                        : () {
-                            context.read<AdminCubit>().approve(
-                              r.requestId,
-                              r.userId,
-                            );
-                          },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: r.status.name == "approved"
-                          ? Colors.green
-                          : Colors.blue,
-                    ),
-                    child: Text(r.status.name == "approved" ? "تم" : "قبول"),
-                  ),
-                ),
+              return RequestCard(
+                name: r.name,
+                wasteType: r.wasteType,
+                phone: r.phone,
+                nationalId: r.nationalId,
+                status: r.status.name,
+                onApprove: () {
+                  context.read<AdminCubit>().approve(r.requestId, r.userId);
+                },
               );
             },
           );

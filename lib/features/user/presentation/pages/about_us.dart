@@ -43,6 +43,15 @@ class AboutUsPage extends StatelessWidget {
         body: SingleChildScrollView(
           child: Column(
             children: [
+              SizedBox(
+                height: 40,
+                child: Row(
+                  children: [
+                    Image.asset('assets/logo1.jpeg'),
+                    Image.asset('assets/logo2.jpeg'),
+                  ],
+                ),
+              ),
               SizedBox(height: 10.h),
 
               buildCard(

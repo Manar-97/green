@@ -22,6 +22,7 @@ import '../../features/auth/domain/repo/auth_repo.dart' as _i170;
 import '../../features/auth/domain/usecases/check_auth.dart' as _i1011;
 import '../../features/auth/domain/usecases/reset_password.dart' as _i1066;
 import '../../features/auth/domain/usecases/sign_in.dart' as _i920;
+import '../../features/auth/domain/usecases/sign_in_with_google.dart' as _i692;
 import '../../features/auth/domain/usecases/sign_out.dart' as _i568;
 import '../../features/auth/domain/usecases/sign_up.dart' as _i190;
 import '../../features/auth/presentation/cubit/auth_cubit.dart' as _i117;
@@ -38,21 +39,21 @@ extension GetItInjectableX on _i174.GetIt {
   }) {
     final gh = _i526.GetItHelper(this, environment, environmentFilter);
     gh.singleton<_i24.AuthRemoteDataSource>(() => _i24.AuthRemoteDataSource());
-    gh.lazySingleton<_i70.RequestRepository>(
-      () => _i793.RequestRepositoryImpl(),
-    );
     gh.lazySingleton<_i76.AdminRepository>(() => _i545.AdminRepoImpl());
-    gh.factory<_i297.ProfileCubit>(
-      () => _i297.ProfileCubit(gh<_i70.RequestRepository>()),
-    );
-    gh.factory<_i899.RequestCubit>(
-      () => _i899.RequestCubit(gh<_i70.RequestRepository>()),
-    );
     gh.factory<_i170.AuthRepository>(
       () => _i279.AuthRepoImpl(gh<_i24.AuthRemoteDataSource>()),
     );
     gh.factory<_i684.AdminCubit>(
       () => _i684.AdminCubit(gh<_i76.AdminRepository>()),
+    );
+    gh.lazySingleton<_i70.RequestRepository>(
+      () => _i793.RequestRepositoryImpl(),
+    );
+    gh.factory<_i899.RequestCubit>(
+      () => _i899.RequestCubit(gh<_i70.RequestRepository>()),
+    );
+    gh.factory<_i297.ProfileCubit>(
+      () => _i297.ProfileCubit(gh<_i70.RequestRepository>()),
     );
     gh.factory<_i1011.CheckAuthUseCase>(
       () => _i1011.CheckAuthUseCase(gh<_i170.AuthRepository>()),
@@ -62,6 +63,9 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.factory<_i920.SignInUseCase>(
       () => _i920.SignInUseCase(gh<_i170.AuthRepository>()),
+    );
+    gh.factory<_i692.SignInWithGoogleUseCase>(
+      () => _i692.SignInWithGoogleUseCase(gh<_i170.AuthRepository>()),
     );
     gh.factory<_i568.SignOutUseCase>(
       () => _i568.SignOutUseCase(gh<_i170.AuthRepository>()),
@@ -76,6 +80,7 @@ extension GetItInjectableX on _i174.GetIt {
         signOut: gh<_i568.SignOutUseCase>(),
         resetPassword: gh<_i1066.ResetPasswordUseCase>(),
         checkAuth: gh<_i1011.CheckAuthUseCase>(),
+        signInWithGoogle: gh<_i692.SignInWithGoogleUseCase>(),
       ),
     );
     return this;

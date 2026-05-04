@@ -5,6 +5,8 @@ import '../../../../core/errors/error_dialog.dart';
 import '../../../../core/widgets/app_dialog.dart';
 import '../../../../core/widgets/app_style.dart';
 import '../cubit/auth_cubit.dart';
+import '../widgets/auth_button.dart';
+import '../widgets/custom_text_field.dart';
 import 'login.dart';
 
 class Register extends StatefulWidget {
@@ -47,8 +49,9 @@ class _RegisterState extends State<Register> {
                   if (state is AuthSuccess) {
                     showAppDialog(
                       context,
-                      title: "مرحبا",
-                      message: "تم تسجيل الدخول",
+                      title: "تم إنشاء الحساب 🎉",
+                      message:
+                          "افتح بريدك الإلكتروني واضغط على رابط التفعيل لتفعيل الحساب 📩",
                       isSuccess: true,
                     );
                   } else if (state is AuthError) {
@@ -82,62 +85,53 @@ class _RegisterState extends State<Register> {
 
                             SizedBox(height: 50.h),
 
-                            TextField(
+                            AppTextField(
                               controller: emailController,
-                              decoration: AppStyles.inputDecoration.copyWith(
-                                labelText: "الإيميل",
-                                prefixIcon: const Icon(Icons.email),
-                              ),
+                              label: "الإيميل",
+                              icon: Icons.email,
                             ),
 
                             SizedBox(height: 16.h),
 
-                            TextField(
+                            AppTextField(
                               controller: passwordController,
-                              obscureText: obscure1,
-                              decoration: AppStyles.inputDecoration.copyWith(
-                                labelText: "كلمة المرور",
-                                prefixIcon: const Icon(Icons.lock),
-                                suffixIcon: IconButton(
-                                  icon: Icon(
-                                    obscure1
-                                        ? Icons.visibility_off
-                                        : Icons.visibility,
-                                  ),
-                                  onPressed: () {
-                                    setState(() => obscure1 = !obscure1);
-                                  },
+                              label: "كلمة المرور",
+                              icon: Icons.lock,
+                              obscure: obscure1,
+                              suffixIcon: IconButton(
+                                icon: Icon(
+                                  obscure1
+                                      ? Icons.visibility_off
+                                      : Icons.visibility,
                                 ),
+                                onPressed: () =>
+                                    setState(() => obscure1 = !obscure1),
                               ),
                             ),
 
                             SizedBox(height: 16.h),
 
-                            TextField(
+                            AppTextField(
                               controller: confirmController,
-                              obscureText: obscure2,
-                              decoration: AppStyles.inputDecoration.copyWith(
-                                labelText: "تأكيد كلمة المرور",
-                                prefixIcon: const Icon(Icons.lock_outline),
-                                suffixIcon: IconButton(
-                                  icon: Icon(
-                                    obscure2
-                                        ? Icons.visibility_off
-                                        : Icons.visibility,
-                                  ),
-                                  onPressed: () {
-                                    setState(() => obscure2 = !obscure2);
-                                  },
+                              label: "تأكيد كلمة المرور",
+                              icon: Icons.lock_outline,
+                              obscure: obscure2,
+                              suffixIcon: IconButton(
+                                icon: Icon(
+                                  obscure2
+                                      ? Icons.visibility_off
+                                      : Icons.visibility,
                                 ),
+                                onPressed: () =>
+                                    setState(() => obscure2 = !obscure2),
                               ),
                             ),
-
                             SizedBox(height: 25.h),
 
                             SizedBox(
                               width: double.infinity,
-                              child: ElevatedButton(
-                                style: AppStyles.buttonStyle,
+                              child: AuthButton(
+                                text: "تسجيل",
                                 onPressed: () {
                                   FocusScope.of(context).unfocus();
 
@@ -145,8 +139,11 @@ class _RegisterState extends State<Register> {
                                     emailController.text.trim(),
                                     passwordController.text.trim(),
                                   );
+
+                                  emailController.clear();
+                                  passwordController.clear();
+                                  confirmController.clear();
                                 },
-                                child: const Text("تسجيل"),
                               ),
                             ),
 

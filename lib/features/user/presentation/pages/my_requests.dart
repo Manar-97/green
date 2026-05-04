@@ -25,17 +25,34 @@ class _MyRequestsScreenState extends State<MyRequestsScreen> {
     });
   }
 
+  String getStatusText(RequestStatus status) {
+    switch (status) {
+      case RequestStatus.pending:
+        return "قيد المراجعة ⏳";
+      case RequestStatus.approved:
+        return "تم التنفيذ ✔️";
+      default:
+        return "غير معروف";
+    }
+  }
+
+  Color getStatusColor(RequestStatus status) {
+    switch (status) {
+      case RequestStatus.pending:
+        return Colors.orange;
+      case RequestStatus.approved:
+        return Colors.green;
+      default:
+        return Colors.grey;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Directionality(
       textDirection: TextDirection.rtl,
       child: Scaffold(
         backgroundColor: Colors.grey[100],
-        appBar: AppBar(
-          title: const Text("طلباتي ♻️"),
-          backgroundColor: Colors.green,
-          centerTitle: true,
-        ),
         body: BlocBuilder<RequestCubit, RequestState>(
           builder: (context, state) {
             if (state.isLoading) {
@@ -66,24 +83,25 @@ class _MyRequestsScreenState extends State<MyRequestsScreen> {
                       style: const TextStyle(fontWeight: FontWeight.bold),
                     ),
                     subtitle: Text(
-                      req.status == RequestStatus.pending
-                          ? "قيد المراجعة"
-                          : "تم التنفيذ ✔️",
+                      req.name,
+                      style: TextStyle(
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
                     trailing: Container(
-                      padding: const EdgeInsets.all(6),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 6,
+                      ),
                       decoration: BoxDecoration(
-                        color: req.status == RequestStatus.pending
-                            ? Colors.orange.shade100
-                            : Colors.green.shade100,
+                        color: getStatusColor(req.status).withOpacity(0.15),
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Text(
-                        req.status.name, // 👈 هنا الحل
+                        getStatusText(req.status),
                         style: TextStyle(
-                          color: req.status == RequestStatus.pending
-                              ? Colors.orange
-                              : Colors.green,
+                          color: getStatusColor(req.status),
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
                     ),

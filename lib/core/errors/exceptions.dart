@@ -1,6 +1,16 @@
-enum ErrorType { network, auth, server, unknown }
+enum ErrorType {
+  network,
+  timeout,
+  auth,
+  database,
+  storage,
+  functions,
+  realtime,
+  validation,
+  unknown,
+}
 
-class AppException implements Exception {
+class AppException {
   final String message;
   final ErrorType type;
 
@@ -8,14 +18,21 @@ class AppException implements Exception {
 }
 
 class NetworkException extends AppException {
-  NetworkException() : super("No internet connection", ErrorType.network);
-}
-
-class ServerException extends AppException {
-  ServerException([String msg = "Server error"]) : super(msg, ErrorType.server);
+  NetworkException([String message = "No internet connection"])
+    : super(message, ErrorType.network);
 }
 
 class AuthException extends AppException {
-  AuthException([String msg = "Authentication error"])
-    : super(msg, ErrorType.auth);
+  AuthException([String message = "Authentication error"])
+    : super(message, ErrorType.auth);
+}
+
+class DatabaseException extends AppException {
+  DatabaseException([String message = "Database error"])
+    : super(message, ErrorType.database);
+}
+
+class StorageException extends AppException {
+  StorageException([String message = "Storage error"])
+    : super(message, ErrorType.storage);
 }

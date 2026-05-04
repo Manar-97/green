@@ -16,6 +16,12 @@ class AuthLoggedInAdmin extends AuthState {}
 
 class AuthLoggedInUser extends AuthState {}
 
+class AuthOtpSent extends AuthState {}
+
+class AuthOtpVerified extends AuthState {}
+
+class AuthOtpLoading extends AuthState {}
+
 class AuthError extends AuthState {
   final String message;
   final ErrorType type;

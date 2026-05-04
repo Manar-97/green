@@ -7,6 +7,8 @@ import '../../../../core/widgets/app_style.dart';
 import '../../../admin/presentation/pages/admin_home.dart';
 import '../../../user/presentation/pages/home.dart';
 import '../cubit/auth_cubit.dart';
+import '../widgets/auth_button.dart';
+import '../widgets/custom_text_field.dart';
 import 'register.dart';
 
 class Login extends StatefulWidget {
@@ -29,6 +31,66 @@ class _LoginState extends State<Login> {
     emailController.dispose();
     passwordController.dispose();
     super.dispose();
+  }
+
+  void showForgotPasswordSheet(BuildContext context, AuthCubit cubit) {
+    final emailController = TextEditingController();
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true, // مهم جدًا
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (ctx) {
+        return AnimatedPadding(
+          duration: const Duration(milliseconds: 200),
+          curve: Curves.easeOut,
+          padding: EdgeInsets.only(
+            left: 16,
+            right: 16,
+            top: 16,
+            bottom: MediaQuery.of(ctx).viewInsets.bottom + 16, // 👈 الكيبورد
+          ),
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Text(
+                  "Reset Password",
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+
+                const SizedBox(height: 12),
+
+                TextField(
+                  controller: emailController,
+                  keyboardType: TextInputType.emailAddress,
+                  decoration: const InputDecoration(
+                    labelText: "Enter your email",
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+
+                const SizedBox(height: 16),
+
+                SizedBox(
+                  width: double.infinity,
+                  height: 50,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      Navigator.pop(ctx);
+                      cubit.forgotPassword(emailController.text.trim());
+                    },
+                    child: const Text("Send Reset Link"),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
   }
 
   @override
@@ -103,85 +165,81 @@ class _LoginState extends State<Login> {
                             ),
 
                             SizedBox(height: 50.h),
-
-                            TextField(
+                            AppTextField(
                               controller: emailController,
-                              decoration: AppStyles.inputDecoration.copyWith(
-                                labelText: "الإيميل",
-                                prefixIcon: const Icon(Icons.email),
-                              ),
+                              label: "الإيميل",
+                              icon: Icons.email,
                             ),
-
                             SizedBox(height: 16.h),
-
-                            TextField(
+                            AppTextField(
                               controller: passwordController,
-                              obscureText: obscurePassword,
-                              decoration: AppStyles.inputDecoration.copyWith(
-                                labelText: "كلمة المرور",
-                                prefixIcon: const Icon(Icons.lock),
-                                suffixIcon: IconButton(
-                                  icon: Icon(
-                                    obscurePassword
-                                        ? Icons.visibility_off
-                                        : Icons.visibility,
-                                  ),
-                                  onPressed: () {
-                                    setState(() {
-                                      obscurePassword = !obscurePassword;
-                                    });
-                                  },
+                              label: "كلمة المرور",
+                              icon: Icons.lock,
+                              obscure: obscurePassword,
+                              suffixIcon: IconButton(
+                                icon: Icon(
+                                  obscurePassword
+                                      ? Icons.visibility_off
+                                      : Icons.visibility,
                                 ),
+                                onPressed: () {
+                                  setState(
+                                    () => obscurePassword = !obscurePassword,
+                                  );
+                                },
                               ),
                             ),
-
                             Align(
                               alignment: Alignment.centerLeft,
                               child: TextButton(
-                                onPressed: isSendingReset
-                                    ? () {
-                                        showAppDialog(
-                                          context,
-                                          title: "انتظر",
-                                          message: "حاول بعد دقيقة مرة أخرى",
-                                        );
-                                      }
-                                    : () {
-                                        FocusScope.of(context).unfocus();
-                                        showAppDialog(
-                                          context,
-                                          title: "Reset Password",
-                                          message: "Check your email 📩",
-                                        );
-                                      },
+                                onPressed: () {
+                                  showForgotPasswordSheet(
+                                    context,
+                                    context.read<AuthCubit>(),
+                                  );
+                                },
                                 child: const Text("نسيت كلمة المرور؟"),
                               ),
                             ),
 
                             SizedBox(height: 20.h),
+                            AuthButton(
+                              text: "تسجيل الدخول",
+                              loading: state is AuthLoading,
+                              onPressed: () {
+                                FocusScope.of(
+                                  context,
+                                ).unfocus(); // يقفل الكيبورد
+
+                                context.read<AuthCubit>().login(
+                                  emailController.text.trim(),
+                                  passwordController.text.trim(),
+                                );
+
+                                emailController.clear(); // تنظيف
+                                passwordController.clear(); // تنظيف
+                              },
+                            ),
+                            SizedBox(height: 16.h),
 
                             SizedBox(
                               width: double.infinity,
-                              child: ElevatedButton(
-                                style: AppStyles.buttonStyle,
-                                onPressed: state is AuthLoading
-                                    ? null
-                                    : () {
-                                        FocusScope.of(context).unfocus();
-
-                                        context.read<AuthCubit>().login(
-                                          emailController.text.trim(),
-                                          passwordController.text.trim(),
-                                        );
-                                      },
-                                child: state is AuthLoading
-                                    ? const CircularProgressIndicator(
-                                        color: Colors.white,
-                                      )
-                                    : const Text("تسجيل الدخول"),
+                              child: ElevatedButton.icon(
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.white,
+                                  foregroundColor: Colors.black,
+                                  padding: EdgeInsets.symmetric(vertical: 12.h),
+                                ),
+                                onPressed: () {
+                                  context.read<AuthCubit>().loginWithGoogle();
+                                },
+                                icon: Image.network(
+                                  'https://cdn-icons-png.flaticon.com/512/281/281764.png',
+                                  height: 24,
+                                ),
+                                label: const Text("تسجيل باستخدام Gmail"),
                               ),
                             ),
-
                             TextButton(
                               onPressed: () {
                                 Navigator.pushNamed(

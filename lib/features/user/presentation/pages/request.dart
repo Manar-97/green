@@ -42,6 +42,8 @@ class _RequestScreenState extends State<RequestScreen> {
         .eq('id', user.id)
         .maybeSingle();
 
+    if (!mounted) return; // 👈 مهم جدًا
+
     if (profile == null) {
       Future.microtask(() {
         showDialog(
@@ -54,7 +56,7 @@ class _RequestScreenState extends State<RequestScreen> {
             addressController: addressController,
             onSaved: () {
               final userId = Supabase.instance.client.auth.currentUser?.id;
-              if (userId != null) {
+              if (userId != null && mounted) {
                 context.read<ProfileCubit>().loadProfile(userId);
               }
             },
@@ -138,26 +140,6 @@ class _RequestScreenState extends State<RequestScreen> {
       builder: (context, state) {
         return Scaffold(
           backgroundColor: Colors.grey[100],
-          appBar: AppBar(
-            title: const Text(
-              "طلب جمع النفايات 🌿",
-              style: TextStyle(color: Colors.white),
-            ),
-            centerTitle: true,
-            backgroundColor: Colors.green,
-            actions: [
-              IconButton(
-                onPressed: () {
-                  Navigator.pushNamed(context, AboutUsPage.routeName);
-                },
-                icon: Icon(
-                  Icons.not_listed_location,
-                  color: Colors.white,
-                  size: 40,
-                ),
-              ),
-            ],
-          ),
           body: SingleChildScrollView(
             child: Padding(
               padding: const EdgeInsets.all(16),

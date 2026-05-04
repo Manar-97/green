@@ -1,13 +1,10 @@
 import 'dart:async';
-
-import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'core/di/di.dart';
 import 'core/utils/connectivity_service.dart';
-import 'core/utils/network_guard.dart';
 import 'features/admin/presentation/cubit/admin_cubit.dart';
 import 'features/admin/presentation/pages/admin_home.dart';
 import 'features/auth/presentation/cubit/auth_cubit.dart';
@@ -62,6 +59,7 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
+        // BlocProvider(create: (_) => getIt<AuthCubit>()..start()),
         BlocProvider(create: (_) => getIt<AuthCubit>()),
         BlocProvider(create: (_) => getIt<RequestCubit>()),
         BlocProvider(create: (_) => getIt<ProfileCubit>()),
@@ -80,6 +78,7 @@ class _MyAppState extends State<MyApp> {
               colorScheme: ColorScheme.fromSeed(seedColor: Colors.green),
               useMaterial3: true,
             ),
+            //home: const Splash(), // 🔥 أهم سطر
             routes: {
               Splash.routeName: (_) => const Splash(),
               Login.routeName: (_) => const Login(),
@@ -89,8 +88,18 @@ class _MyAppState extends State<MyApp> {
               AdminHome.routeName: (_) => const AdminHome(),
               AboutUsPage.routeName: (_) => const AboutUsPage(),
             },
-
             initialRoute: Splash.routeName,
+            // onGenerateRoute: (settings) {
+            //   final name = settings.name ?? "";
+            //   // 🔥 مهم جدًا عشان Supabase deep links
+            //   if (settings.name == '/login-callback') {
+            //     return MaterialPageRoute(
+            //       builder: (_) => const Splash(),
+            //     );
+            //   }
+            //
+            //   return null;
+            // },
           );
         },
       ),
