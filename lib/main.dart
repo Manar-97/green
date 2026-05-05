@@ -73,7 +73,7 @@ class _MyAppState extends State<MyApp> {
           return MaterialApp(
             navigatorKey: navigatorKey,
             debugShowCheckedModeBanner: false,
-            title: 'Green App',
+            title: 'الطريق الأخضر',
             theme: ThemeData(
               colorScheme: ColorScheme.fromSeed(seedColor: Colors.green),
               useMaterial3: true,

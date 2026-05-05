@@ -75,10 +75,10 @@ class _RegisterState extends State<Register> {
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            const Text(
+                            Text(
                               "إنشاء حساب جديد 🌱",
                               style: TextStyle(
-                                fontSize: 24,
+                                fontSize: 24.sp,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
@@ -151,7 +151,10 @@ class _RegisterState extends State<Register> {
                               onPressed: () {
                                 Navigator.pushNamed(context, Login.routeName);
                               },
-                              child: const Text("لدي حساب"),
+                              child: Text(
+                                "لدي حساب",
+                                style: TextStyle(fontSize: 14.sp),
+                              ),
                             ),
 
                             SizedBox(height: 40.h),

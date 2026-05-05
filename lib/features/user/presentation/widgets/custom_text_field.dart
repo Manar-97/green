@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class CustomTextField extends StatelessWidget {
   final TextEditingController controller;
@@ -17,12 +18,16 @@ class CustomTextField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 12),
+      margin: EdgeInsets.only(bottom: 12.h),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(14),
-        boxShadow: const [
-          BoxShadow(color: Colors.black12, blurRadius: 8, offset: Offset(0, 3)),
+        borderRadius: BorderRadius.circular(14.r),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black12,
+            blurRadius: 8.r,
+            offset: Offset(0, 3),
+          ),
         ],
       ),
       child: TextField(
@@ -34,7 +39,7 @@ class CustomTextField extends StatelessWidget {
           prefixIcon: Icon(icon, color: Colors.green),
           labelText: label,
           border: InputBorder.none,
-          contentPadding: const EdgeInsets.all(14),
+          contentPadding: EdgeInsets.all(14.h),
         ),
       ),
     );

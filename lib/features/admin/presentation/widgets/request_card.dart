@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class RequestCard extends StatelessWidget {
   final String name;
@@ -23,8 +24,8 @@ class RequestCard extends StatelessWidget {
     final isApproved = status == "approved";
 
     return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+      margin: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15.r)),
       child: ListTile(
         title: Text(name, style: const TextStyle(fontWeight: FontWeight.bold)),
         subtitle: Column(

@@ -34,12 +34,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }) {
     return Container(
       margin: EdgeInsets.only(bottom: 6.h),
-      padding: EdgeInsets.all(14.w),
+      padding: EdgeInsets.all(10.h),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(15),
+        borderRadius: BorderRadius.circular(15.r),
         boxShadow: [
-          BoxShadow(color: Colors.black12, blurRadius: 8, offset: Offset(0, 4)),
+          BoxShadow(
+            color: Colors.black12,
+            blurRadius: 8.r,
+            offset: Offset(0, 4),
+          ),
         ],
       ),
       child: Row(
@@ -77,170 +81,164 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget build(BuildContext context) {
     return Directionality(
       textDirection: TextDirection.rtl,
-      child: Scaffold(
-        backgroundColor: Colors.grey[100],
-        body: BlocBuilder<ProfileCubit, ProfileState>(
-          builder: (context, state) {
-            if (state.isLoading) {
-              return const Center(child: CircularProgressIndicator());
-            }
+      child: SafeArea(
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 20.w),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Expanded(
+                child: BlocBuilder<ProfileCubit, ProfileState>(
+                  builder: (context, state) {
+                    if (state.isLoading) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
 
-            final user = state.user;
-            if (user == null) {
-              return const Center(child: Text("لا يوجد بيانات"));
-            }
+                    final user = state.user;
+                    if (user == null) {
+                      return const Center(child: Text("لا يوجد بيانات"));
+                    }
 
-            return Directionality(
-              textDirection: TextDirection.rtl,
-              child: SafeArea(
-                child: Container(
-                  width: double.infinity,
-                  height: double.infinity,
-                  color: Colors.grey[100],
-                  child: Padding(
-                    padding: EdgeInsets.only(bottom: 5.h),
-                    child: Column(
-                      children: [
-                        SizedBox(height: 5.h),
+                    return Directionality(
+                      textDirection: TextDirection.rtl,
+                      child: SafeArea(
+                        child: Container(
+                          width: double.infinity,
+                          height: double.infinity,
+                          color: Colors.grey[100],
+                          child: Padding(
+                            padding: EdgeInsets.only(bottom: 5.h),
+                            child: Column(
+                              children: [
+                                SizedBox(height: 5.h),
 
-                        // 👤 Avatar + Name
-                        Container(
-                          padding: const EdgeInsets.all(6),
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: Colors.green.withOpacity(0.1),
-                          ),
-                          child: const CircleAvatar(
-                            radius: 40,
-                            backgroundColor: Colors.white,
-                            child: Icon(
-                              Icons.person,
-                              size: 40,
-                              color: Colors.green,
-                            ),
-                          ),
-                        ),
-
-                        SizedBox(height: 5.h),
-
-                        Text(
-                          user.name,
-                          style: TextStyle(
-                            fontSize: 20.sp,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-
-                        SizedBox(height: 10.h),
-
-                        // 📦 Info Cards (Expanded علشان تملى المساحة)
-                        Expanded(
-                          child: ListView(
-                            padding: EdgeInsets.symmetric(horizontal: 16.w),
-                            children: [
-                              buildInfoCard(
-                                icon: Icons.home,
-                                title: "العنوان",
-                                value: user.address,
-                              ),
-                              buildInfoCard(
-                                icon: Icons.phone,
-                                title: "الهاتف",
-                                value: user.phone,
-                              ),
-                              buildInfoCard(
-                                icon: Icons.badge,
-                                title: "الرقم القومي",
-                                value: user.nationalId,
-                              ),
-                              buildInfoCard(
-                                icon: Icons.star,
-                                title: "النقاط",
-                                value: user.score.toString(),
-                              ),
-
-                              SizedBox(height: 10.h),
-
-                              // 🟢 About Us
-                              GestureDetector(
-                                onTap: () {
-                                  Navigator.pushNamed(
-                                    context,
-                                    AboutUsPage.routeName,
-                                  );
-                                },
-                                child: Container(
-                                  margin: const EdgeInsets.symmetric(
-                                    vertical: 10,
-                                  ),
-                                  padding: const EdgeInsets.symmetric(
-                                    vertical: 15,
-                                  ),
+                                // 👤 Avatar + Name
+                                Container(
+                                  padding: EdgeInsets.all(6.h),
                                   decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(30),
-                                    color: Colors.green,
+                                    shape: BoxShape.circle,
+                                    color: Colors.green.withOpacity(0.1),
                                   ),
-                                  child: const Center(
-                                    child: Text(
-                                      "من نحن",
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 20,
-                                      ),
+                                  child: CircleAvatar(
+                                    radius: 40.r,
+                                    backgroundColor: Colors.white,
+                                    child: Icon(
+                                      Icons.person,
+                                      size: 40.sp,
+                                      color: Colors.green,
                                     ),
                                   ),
                                 ),
-                              ),
 
-                              // 🔴 Logout
-                              GestureDetector(
-                                onTap: () {
-                                  Supabase.instance.client.auth.signOut();
-                                  Navigator.pushReplacementNamed(
-                                    context,
-                                    Login.routeName,
-                                  );
-                                },
-                                child: Container(
-                                  margin: const EdgeInsets.symmetric(
-                                    vertical: 10,
+                                SizedBox(height: 10.h),
+
+                                Text(
+                                  user.name,
+                                  style: TextStyle(
+                                    fontSize: 20.sp,
+                                    fontWeight: FontWeight.bold,
                                   ),
-                                  padding: const EdgeInsets.symmetric(
-                                    vertical: 14,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(30),
-                                    gradient: const LinearGradient(
-                                      colors: [Colors.red, Colors.redAccent],
-                                    ),
-                                  ),
-                                  child: const Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
+                                ),
+
+                                SizedBox(height: 20.h),
+
+                                // 📦 Info Cards (Expanded علشان تملى المساحة)
+                                Expanded(
+                                  child: ListView(
                                     children: [
-                                      Icon(Icons.logout, color: Colors.white),
-                                      SizedBox(width: 8),
-                                      Text(
-                                        "تسجيل الخروج",
-                                        style: TextStyle(
-                                          color: Colors.white,
-                                          fontWeight: FontWeight.bold,
-                                        ),
+                                      buildInfoCard(
+                                        icon: Icons.home,
+                                        title: "العنوان",
+                                        value: user.address,
+                                      ),
+                                      buildInfoCard(
+                                        icon: Icons.phone,
+                                        title: "الهاتف",
+                                        value: user.phone,
+                                      ),
+                                      buildInfoCard(
+                                        icon: Icons.badge,
+                                        title: "الرقم القومي",
+                                        value: user.nationalId,
+                                      ),
+                                      buildInfoCard(
+                                        icon: Icons.star,
+                                        title: "النقاط",
+                                        value: user.score.toString(),
                                       ),
                                     ],
                                   ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
                         ),
-                      ],
+                      ),
+                    );
+                  },
+                ),
+              ),
+
+              // 🟢 About Us
+              GestureDetector(
+                onTap: () {
+                  Navigator.pushNamed(context, AboutUsPage.routeName);
+                },
+                child: Container(
+                  margin: EdgeInsets.symmetric(vertical: 10.h),
+                  padding: EdgeInsets.symmetric(vertical: 10.h),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(30.r),
+                    color: Colors.green,
+                  ),
+                  child: Center(
+                    child: Text(
+                      "من نحن",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w500,
+                        fontSize: 20.sp,
+                      ),
                     ),
                   ),
                 ),
               ),
-            );
-          },
+
+              // 🔴 Logout
+              GestureDetector(
+                onTap: () {
+                  Supabase.instance.client.auth.signOut();
+                  Navigator.pushReplacementNamed(context, Login.routeName);
+                },
+                child: Container(
+                  margin: EdgeInsets.symmetric(vertical: 10.h),
+                  padding: EdgeInsets.symmetric(vertical: 14.h),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(30.r),
+                    gradient: const LinearGradient(
+                      colors: [Colors.red, Colors.redAccent],
+                    ),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.logout, color: Colors.white),
+                      SizedBox(width: 8.w),
+                      Text(
+                        "تسجيل الخروج",
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w500,
+                          fontSize: 20.sp,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              SizedBox(height: 20.h),
+            ],
+          ),
         ),
       ),
     );

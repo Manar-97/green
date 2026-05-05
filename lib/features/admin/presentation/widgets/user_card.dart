@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class UserCard extends StatelessWidget {
   final String name;
@@ -15,8 +16,8 @@ class UserCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+      margin: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15.r)),
       child: ListTile(
         leading: CircleAvatar(
           backgroundColor: Colors.green,
@@ -25,10 +26,10 @@ class UserCard extends StatelessWidget {
         title: Text(name),
         subtitle: Text(phone),
         trailing: Container(
-          padding: const EdgeInsets.all(8),
+          padding: EdgeInsets.all(8.h),
           decoration: BoxDecoration(
             color: Colors.green.withOpacity(0.1),
-            borderRadius: BorderRadius.circular(10),
+            borderRadius: BorderRadius.circular(10.r),
           ),
           child: Text("⭐ $score"),
         ),

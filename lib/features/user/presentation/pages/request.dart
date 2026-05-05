@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:green/core/widgets/app_style.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../../core/widgets/app_dialog.dart';
 import '../cubit/profile_cubit.dart';
@@ -138,46 +139,45 @@ class _RequestScreenState extends State<RequestScreen> {
         }
       },
       builder: (context, state) {
-        return Scaffold(
-          backgroundColor: Colors.grey[100],
-          body: SingleChildScrollView(
+        return SafeArea(
+          child: SingleChildScrollView(
             child: Padding(
-              padding: const EdgeInsets.all(16),
+              padding: EdgeInsets.all(16.w),
               child: Column(
                 children: [
                   SizedBox(height: 10.h),
                   Container(
-                    padding: const EdgeInsets.all(15),
+                    padding: EdgeInsets.all(15.w),
                     decoration: BoxDecoration(
                       gradient: const LinearGradient(
                         colors: [Colors.green, Colors.lightGreen],
                       ),
-                      borderRadius: BorderRadius.circular(15),
+                      borderRadius: BorderRadius.circular(15.r),
                     ),
-                    child: const Text(
+                    child: Text(
                       "مشروع الطريق الاخضر لعالم اكثر امانا 🌍",
                       style: TextStyle(
                         color: Colors.white,
-                        fontSize: 25,
+                        fontSize: 20.sp,
                         fontWeight: FontWeight.w500,
                       ),
                     ),
                   ),
-                  SizedBox(height: 30.h),
+                  SizedBox(height: 20.h),
                   Align(
                     alignment: Alignment.centerRight,
-                    child: const Text(
+                    child: Text(
                       "اختار نوع المخلفات واملأ البيانات",
                       style: TextStyle(
                         color: Colors.black,
-                        fontSize: 20,
+                        fontSize: 20.sp,
                         fontWeight: FontWeight.w500,
                       ),
                     ),
                   ),
                   SizedBox(height: 10.h),
                   Wrap(
-                    spacing: 10,
+                    spacing: 10.w,
                     children: [
                       WasteTypeChip(
                         text: "ورق",
@@ -224,21 +224,19 @@ class _RequestScreenState extends State<RequestScreen> {
                     label: "العنوان",
                     icon: Icons.location_on,
                   ),
+                  SizedBox(height: 20.h),
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton(
                       onPressed: state.isSubmitting ? null : submit,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.green,
-                        foregroundColor: Colors.white,
-                      ),
+                      style: AppStyles.buttonStyle,
                       child: state.isSubmitting
                           ? const CircularProgressIndicator(color: Colors.white)
-                          : const Text(
+                          : Text(
                               "إرسال الطلب",
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
-                                fontSize: 22,
+                                fontSize: 22.sp,
                               ),
                             ),
                     ),

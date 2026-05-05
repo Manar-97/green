@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../../core/widgets/app_dialog.dart';
@@ -57,21 +58,21 @@ class ProfileDialog extends StatelessWidget {
     return Dialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       child: Padding(
-        padding: const EdgeInsets.all(20),
+        padding: EdgeInsets.all(20.h),
         child: SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Text(
+              Text(
                 "🌿 أهلاً بيك",
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                style: TextStyle(fontSize: 20.sp, fontWeight: FontWeight.bold),
               ),
 
-              const SizedBox(height: 10),
+              SizedBox(height: 10.h),
 
               const Text("من فضلك أدخل بياناتك لأول مرة"),
 
-              const SizedBox(height: 20),
+              SizedBox(height: 20.h),
 
               CustomTextField(
                 controller: nameController,
@@ -96,7 +97,7 @@ class ProfileDialog extends StatelessWidget {
                 icon: Icons.location_on,
               ),
 
-              const SizedBox(height: 20),
+              SizedBox(height: 20.h),
 
               SizedBox(
                 width: double.infinity,

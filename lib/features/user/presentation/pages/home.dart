@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:green/features/user/presentation/pages/profile.dart';
 import 'request.dart';
 import 'my_requests.dart';
@@ -23,29 +24,40 @@ class _UserHomeState extends State<UserHome> {
     return Directionality(
       textDirection: TextDirection.rtl,
       child: Scaffold(
+        backgroundColor: Colors.grey[100],
         appBar: AppBar(
           backgroundColor: Colors.green,
           title: Text(
             titles[currentIndex],
-            style: const TextStyle(
+            style: TextStyle(
               color: Colors.white,
-              fontSize: 25,
+              fontSize: 25.sp,
               fontWeight: FontWeight.bold,
             ),
           ),
           centerTitle: true,
         ),
         resizeToAvoidBottomInset: false,
-        backgroundColor: Colors.grey[100],
         extendBody: true,
         body: Column(
           children: [
             SizedBox(
-              height: 40,
+              height: 40.h,
               child: Row(
                 children: [
-                  Image.asset('assets/logo1.jpeg'),
-                  Image.asset('assets/logo2.jpeg'),
+                  Expanded(
+                    child: Image.asset(
+                      'assets/logo1.jpeg',
+                      fit: BoxFit.contain,
+                    ),
+                  ),
+                  SizedBox(width: 10.w),
+                  Expanded(
+                    child: Image.asset(
+                      'assets/logo2.jpeg',
+                      fit: BoxFit.contain,
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -76,9 +88,9 @@ class _UserHomeState extends State<UserHome> {
 
         bottomNavigationBar: BottomAppBar(
           shape: const CircularNotchedRectangle(),
-          notchMargin: 8,
+          notchMargin: 8.w,
           child: SizedBox(
-            height: 60,
+            height: 60.h,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
@@ -89,9 +101,7 @@ class _UserHomeState extends State<UserHome> {
                   ),
                   onPressed: () => setState(() => currentIndex = 2),
                 ),
-
-                const SizedBox(width: 30), // مكان الـ FAB
-
+                SizedBox(width: 30.w), // مكان الـ FAB
                 IconButton(
                   icon: Icon(
                     Icons.list_alt,

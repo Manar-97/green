@@ -39,29 +39,32 @@ class _LoginState extends State<Login> {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true, // مهم جدًا
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20.r)),
       ),
       builder: (ctx) {
         return AnimatedPadding(
           duration: const Duration(milliseconds: 200),
           curve: Curves.easeOut,
           padding: EdgeInsets.only(
-            left: 16,
-            right: 16,
-            top: 16,
-            bottom: MediaQuery.of(ctx).viewInsets.bottom + 16, // 👈 الكيبورد
+            left: 16.w,
+            right: 16.w,
+            top: 16.h,
+            bottom: MediaQuery.of(ctx).viewInsets.bottom + 16.h, // 👈 الكيبورد
           ),
           child: SingleChildScrollView(
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Text(
+                Text(
                   "Reset Password",
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                    fontSize: 18.sp,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
 
-                const SizedBox(height: 12),
+                SizedBox(height: 12.h),
 
                 TextField(
                   controller: emailController,
@@ -72,11 +75,11 @@ class _LoginState extends State<Login> {
                   ),
                 ),
 
-                const SizedBox(height: 16),
+                SizedBox(height: 16.h),
 
                 SizedBox(
                   width: double.infinity,
-                  height: 50,
+                  height: 50.h,
                   child: ElevatedButton(
                     onPressed: () {
                       Navigator.pop(ctx);
@@ -156,10 +159,10 @@ class _LoginState extends State<Login> {
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            const Text(
+                            Text(
                               "مرحبًا بعودتك 👋",
                               style: TextStyle(
-                                fontSize: 26,
+                                fontSize: 26.sp,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
@@ -235,9 +238,12 @@ class _LoginState extends State<Login> {
                                 },
                                 icon: Image.network(
                                   'https://cdn-icons-png.flaticon.com/512/281/281764.png',
-                                  height: 24,
+                                  height: 24.h,
                                 ),
-                                label: const Text("تسجيل باستخدام Gmail"),
+                                label: Text(
+                                  "تسجيل باستخدام Gmail",
+                                  style: TextStyle(fontSize: 16.sp),
+                                ),
                               ),
                             ),
                             TextButton(
@@ -247,7 +253,10 @@ class _LoginState extends State<Login> {
                                   Register.routeName,
                                 );
                               },
-                              child: const Text("إنشاء حساب"),
+                              child: Text(
+                                "إنشاء حساب",
+                                style: TextStyle(fontSize: 14.sp),
+                              ),
                             ),
 
                             SizedBox(height: 40.h),

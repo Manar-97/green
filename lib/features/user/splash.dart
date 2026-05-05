@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:app_links/app_links.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../auth/presentation/cubit/auth_cubit.dart';
 import '../auth/presentation/pages/login.dart';
 import '../admin/presentation/pages/admin_home.dart';
@@ -80,16 +81,16 @@ class _SplashState extends State<Splash> {
                 );
               }
 
-              return const Center(
+              return Center(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.eco, size: 80, color: Colors.white),
-                    SizedBox(height: 10),
+                    Icon(Icons.eco, size: 80.sp, color: Colors.white),
+                    SizedBox(height: 10.h),
                     Text(
-                      "مشروع الطريق الأخضر \nلعالم أكثر امانا",
+                      "مشروع الطريق الأخضر لعالم أكثر امانا",
                       style: TextStyle(
-                        fontSize: 26,
+                        fontSize: 26.sp,
                         color: Colors.white,
                         fontWeight: FontWeight.bold,
                       ),

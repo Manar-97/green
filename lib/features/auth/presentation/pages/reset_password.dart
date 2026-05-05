@@ -52,7 +52,6 @@ class _ResetPasswordState extends State<ResetPassword> {
         print("✅ exchangeCodeForSession SUCCESS");
         sessionReady = true;
       }
-
       // CASE 2: access token flow
       else if (uri.fragment.contains('access_token')) {
         print("🟡 FOUND ACCESS TOKEN IN FRAGMENT");
@@ -62,14 +61,12 @@ class _ResetPasswordState extends State<ResetPassword> {
         print("✅ getSessionFromUrl SUCCESS");
         sessionReady = true;
       }
-
       // CASE 3: existing session
       else if (Supabase.instance.client.auth.currentSession != null) {
         print("🟣 EXISTING SESSION FOUND");
 
         sessionReady = true;
       }
-
       // CASE 4: nothing found
       else {
         print("🔴 NO VALID RESET DATA FOUND");
@@ -153,7 +150,7 @@ class _ResetPasswordState extends State<ResetPassword> {
     return Scaffold(
       appBar: AppBar(title: const Text("Reset Password")),
       body: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(16.h),
         child: Column(
           children: [
             TextField(
@@ -161,16 +158,16 @@ class _ResetPasswordState extends State<ResetPassword> {
               obscureText: true,
               decoration: const InputDecoration(labelText: "New Password"),
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16.h),
             TextField(
               controller: confirmController,
               obscureText: true,
               decoration: const InputDecoration(labelText: "Confirm Password"),
             ),
-            const SizedBox(height: 24),
+            SizedBox(height: 24.h),
             SizedBox(
               width: double.infinity,
-              height: 50,
+              height: 50.h,
               child: ElevatedButton(
                 onPressed: isUpdating ? null : updatePassword,
                 child: isUpdating

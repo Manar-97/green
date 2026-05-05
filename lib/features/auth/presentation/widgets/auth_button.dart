@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../../core/widgets/app_style.dart';
 
@@ -23,7 +24,7 @@ class AuthButton extends StatelessWidget {
         onPressed: loading ? null : onPressed,
         child: loading
             ? const CircularProgressIndicator(color: Colors.white)
-            : Text(text),
+            : Text(text,style: TextStyle(fontSize: 16.sp),),
       ),
     );
   }

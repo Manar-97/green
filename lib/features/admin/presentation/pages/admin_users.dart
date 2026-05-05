@@ -105,9 +105,9 @@ class AdminUsersPage extends StatelessWidget {
                 },
               ),
               Positioned(
-                bottom: 30,
-                left: 20,
-                right: 20,
+                bottom: 30.h,
+                left: 20.w,
+                right: 20.w,
                 child: ExportButton(onTap: () => exportAndShare(context)),
               ),
             ],

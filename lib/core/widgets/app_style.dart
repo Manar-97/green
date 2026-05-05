@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class AppStyles {
   static final gradientBg = const BoxDecoration(
@@ -13,18 +14,16 @@ class AppStyles {
     filled: true,
     fillColor: Colors.white,
     border: OutlineInputBorder(
-      borderRadius: BorderRadius.circular(14),
+      borderRadius: BorderRadius.circular(14.r),
       borderSide: BorderSide.none,
     ),
-    contentPadding: const EdgeInsets.all(16),
+    contentPadding: EdgeInsets.all(16.h),
   );
 
   static final buttonStyle = ElevatedButton.styleFrom(
     backgroundColor: Colors.green,
     foregroundColor: Colors.white,
-    shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.circular(14),
-    ),
-    padding: const EdgeInsets.symmetric(vertical: 14),
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14.r)),
+    padding: EdgeInsets.symmetric(vertical: 14.h),
   );
 }

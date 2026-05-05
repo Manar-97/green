@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class ExportButton extends StatelessWidget {
   final VoidCallback onTap;
@@ -10,26 +11,26 @@ class ExportButton extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
+        margin: EdgeInsets.symmetric(horizontal: 20.w, vertical: 15.h),
+        padding: EdgeInsets.symmetric(horizontal: 18.w, vertical: 14.h),
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(30),
+          borderRadius: BorderRadius.circular(30.r),
           gradient: const LinearGradient(
             colors: [Colors.green, Colors.lightGreen],
           ),
           boxShadow: [
             BoxShadow(
               color: Colors.green.withOpacity(0.35),
-              blurRadius: 10,
+              blurRadius: 10.r,
               offset: const Offset(0, 5),
             ),
           ],
         ),
-        child: const Row(
+        child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(Icons.download, color: Colors.white),
-            SizedBox(width: 8),
+            SizedBox(width: 8.w),
             Text(
               "تصدير Excel",
               style: TextStyle(

@@ -27,11 +27,6 @@ class AppTextField extends StatelessWidget {
         prefixIcon: Icon(icon),
         suffixIcon: suffixIcon,
       ),
-      // InputDecoration(
-      //   labelText: label,
-      //   prefixIcon: Icon(icon),
-      //   suffixIcon: suffixIcon,
-      // ),
     );
   }
 }

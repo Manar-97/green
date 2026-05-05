@@ -7,23 +7,26 @@ class AboutUsPage extends StatelessWidget {
 
   Widget buildCard({required String title, required String content}) {
     return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+      margin: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15.r)),
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(16.h),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
               title,
-              style: const TextStyle(
-                fontSize: 16,
+              style: TextStyle(
+                fontSize: 16.sp,
                 fontWeight: FontWeight.bold,
                 color: Colors.green,
               ),
             ),
-            const SizedBox(height: 10),
-            Text(content, style: const TextStyle(height: 1.6, fontSize: 14)),
+            SizedBox(height: 10.h),
+            Text(
+              content,
+              style: TextStyle(height: 1.6.h, fontSize: 14.sp),
+            ),
           ],
         ),
       ),
@@ -44,11 +47,22 @@ class AboutUsPage extends StatelessWidget {
           child: Column(
             children: [
               SizedBox(
-                height: 40,
+                height: 40.h,
                 child: Row(
                   children: [
-                    Image.asset('assets/logo1.jpeg'),
-                    Image.asset('assets/logo2.jpeg'),
+                    Expanded(
+                      child: Image.asset(
+                        'assets/logo1.jpeg',
+                        fit: BoxFit.contain,
+                      ),
+                    ),
+                    SizedBox(width: 10.w),
+                    Expanded(
+                      child: Image.asset(
+                        'assets/logo2.jpeg',
+                        fit: BoxFit.contain,
+                      ),
+                    ),
                   ],
                 ),
               ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../auth/presentation/pages/login.dart';
 import '../cubit/admin_cubit.dart';
@@ -40,7 +41,7 @@ class _AdminHomeState extends State<AdminHome> {
             'الطريق الأخضر',
             style: TextStyle(
               color: Colors.white,
-              fontSize: 25,
+              fontSize: 25.sp,
               fontWeight: FontWeight.bold,
             ),
           ),
@@ -60,11 +61,22 @@ class _AdminHomeState extends State<AdminHome> {
         body: Column(
           children: [
             SizedBox(
-              height: 40,
+              height: 40.h,
               child: Row(
                 children: [
-                  Image.asset('assets/logo1.jpeg'),
-                  Image.asset('assets/logo2.jpeg'),
+                  Expanded(
+                    child: Image.asset(
+                      'assets/logo1.jpeg',
+                      fit: BoxFit.contain,
+                    ),
+                  ),
+                  SizedBox(width: 10.w),
+                  Expanded(
+                    child: Image.asset(
+                      'assets/logo2.jpeg',
+                      fit: BoxFit.contain,
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -93,9 +105,9 @@ class _AdminHomeState extends State<AdminHome> {
 
         bottomNavigationBar: BottomAppBar(
           shape: const CircularNotchedRectangle(),
-          notchMargin: 8,
+          notchMargin: 8.h,
           child: SizedBox(
-            height: 60,
+            height: 60.h,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
@@ -106,7 +118,7 @@ class _AdminHomeState extends State<AdminHome> {
                   ),
                   onPressed: () => setState(() => currentIndex = 0),
                 ),
-                const SizedBox(width: 30),
+                SizedBox(width: 30.w),
                 IconButton(
                   icon: Icon(
                     Icons.people,
