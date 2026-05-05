@@ -27,23 +27,44 @@ class ProfileDialog extends StatelessWidget {
     final user = Supabase.instance.client.auth.currentUser;
     if (user == null) return;
 
+    final phone = phoneController.text.trim();
+    final nid = nidController.text.trim();
+
+    // ❌ validation
+    if (nid.length != 14 || !RegExp(r'^\d{14}$').hasMatch(nid)) {
+      showAppDialog(
+        context,
+        title: "خطأ",
+        message: "الرقم القومي لازم يكون 14 رقم",
+      );
+      return;
+    }
+
+    if (phone.length != 11 || !RegExp(r'^\d{11}$').hasMatch(phone)) {
+      showAppDialog(
+        context,
+        title: "خطأ",
+        message: "رقم الهاتف لازم يكون 11 رقم",
+      );
+      return;
+    }
+
     await Supabase.instance.client.from('profiles').insert({
       "id": user.id,
       "name": nameController.text,
-      "phone": phoneController.text,
-      "national_id": nidController.text,
+      "phone": phone,
+      "national_id": nid,
       "address": addressController.text,
       "score": 0,
     });
-    // 🟢 أهم سطر
+
     await context.read<ProfileCubit>().loadProfile(user.id);
-    // 🟢 احفظ context قبل ما تقفلي
+
     final navigator = Navigator.of(context);
     onSaved();
     navigator.pop();
 
-    // 🟢 استخدمي context آمن (root)
-    Future.delayed(Duration(milliseconds: 200), () {
+    Future.delayed(const Duration(milliseconds: 200), () {
       showAppDialog(
         navigator.context,
         title: "تمام 🎉",

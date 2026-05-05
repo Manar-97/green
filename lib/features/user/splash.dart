@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:app_links/app_links.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -22,20 +21,41 @@ class _SplashState extends State<Splash> {
   late final AppLinks appLinks;
   StreamSubscription? _sub;
 
+  bool _isDeepLinkHandled = false;
+
   @override
   void initState() {
     super.initState();
 
-    // 1️⃣ أول حاجة: تأكد auth state يبدأ
-    context.read<AuthCubit>().checkLogin();
-    context.read<AuthCubit>().start();
+    final cubit = context.read<AuthCubit>();
 
-    // 2️⃣ deep link handling
+    cubit.checkLogin();
+    cubit.start();
+
     appLinks = AppLinks();
 
     _sub = appLinks.uriLinkStream.listen((uri) {
+      if (_isDeepLinkHandled) return;
+
+      if (uri == null) return;
+
+      // 🔥 RESET PASSWORD FLOW
+      if (uri.host == "reset-callback") {
+        _isDeepLinkHandled = true;
+
+        Navigator.pushReplacementNamed(
+          context,
+          "/reset-password",
+          arguments: uri.queryParameters['code'],
+        );
+
+        return;
+      }
+
+      // 🔥 LOGIN CALLBACK
       if (uri.host == "login-callback") {
-        context.read<AuthCubit>().checkLogin();
+        _isDeepLinkHandled = true;
+        cubit.checkLogin();
       }
     });
   }
@@ -89,6 +109,7 @@ class _SplashState extends State<Splash> {
                     SizedBox(height: 10.h),
                     Text(
                       "مشروع الطريق الأخضر لعالم أكثر امانا",
+                      textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize: 26.sp,
                         color: Colors.white,

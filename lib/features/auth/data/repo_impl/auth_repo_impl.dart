@@ -37,24 +37,6 @@ class AuthRepoImpl implements AuthRepository {
   }
 
   @override
-  Future<void> sendOtp(String phone) async {
-    try {
-      await remote.sendOtp(phone: phone);
-    } catch (e) {
-      throw ErrorMapper.map(e);
-    }
-  }
-
-  @override
-  Future<void> verifyOtp(String phone, String token) async {
-    try {
-      await remote.verifyOtp(phone: phone, token: token);
-    } catch (e) {
-      throw ErrorMapper.map(e);
-    }
-  }
-
-  @override
   Future<void> resetPassword(String email) async {
     try {
       await remote.resetPassword(email);

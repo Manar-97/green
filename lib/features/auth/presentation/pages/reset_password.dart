@@ -1,12 +1,16 @@
+import 'dart:async';
+
+import 'package:app_links/app_links.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../../core/widgets/app_dialog.dart';
-import 'login.dart';
+import '../pages/login.dart';
 
 class ResetPassword extends StatefulWidget {
   static const routeName = "reset-password";
+
   const ResetPassword({super.key});
 
   @override
@@ -17,6 +21,9 @@ class _ResetPasswordState extends State<ResetPassword> {
   final passwordController = TextEditingController();
   final confirmController = TextEditingController();
 
+  late final AppLinks _appLinks;
+  StreamSubscription? _sub;
+
   bool loading = true;
   bool sessionReady = false;
   bool isUpdating = false;
@@ -24,79 +31,76 @@ class _ResetPasswordState extends State<ResetPassword> {
   @override
   void initState() {
     super.initState();
-    _initResetFlow();
+
+    _appLinks = AppLinks();
+    _initDeepLink();
   }
 
-  Future<void> _initResetFlow() async {
-    print("🚀 RESET FLOW STARTED");
-    setState(() => loading = true);
+  // ===================== DEEP LINK =====================
+  Future<void> _initDeepLink() async {
+    try {
+      final initialUri = await _appLinks.getInitialLink();
+
+      if (initialUri != null) {
+        _handleUri(initialUri);
+      }
+
+      _sub = _appLinks.uriLinkStream.listen((uri) {
+        if (uri != null) {
+          _handleUri(uri);
+        }
+      });
+    } catch (e) {
+      print("❌ DeepLink error: $e");
+      setState(() {
+        loading = false;
+        sessionReady = false;
+      });
+    }
+  }
+
+  Future<void> _handleUri(Uri uri) async {
+    print("🔗 RESET LINK: $uri");
 
     try {
-      final uri = Uri.base;
-
-      print("🔗 FULL URI: $uri");
-      print("🔍 QUERY PARAMETERS: ${uri.queryParameters}");
-      print("🔍 FRAGMENT: ${uri.fragment}");
-
-      // CASE 1: code flow (PKCE)
-      if (uri.queryParameters.containsKey('code')) {
-        print("🟢 FOUND CODE PARAMETER");
-
-        final code = uri.queryParameters['code'];
-        print("🧾 CODE = $code");
-
+      if (uri.host == "reset-callback") {
         await Supabase.instance.client.auth.exchangeCodeForSession(
           uri.toString(),
         );
 
-        print("✅ exchangeCodeForSession SUCCESS");
-        sessionReady = true;
+        setState(() {
+          sessionReady = true;
+          loading = false;
+        });
+      } else {
+        setState(() {
+          sessionReady = false;
+          loading = false;
+        });
       }
-      // CASE 2: access token flow
-      else if (uri.fragment.contains('access_token')) {
-        print("🟡 FOUND ACCESS TOKEN IN FRAGMENT");
+    } catch (e) {
+      print("❌ RESET ERROR: $e");
 
-        await Supabase.instance.client.auth.getSessionFromUrl(uri);
-
-        print("✅ getSessionFromUrl SUCCESS");
-        sessionReady = true;
-      }
-      // CASE 3: existing session
-      else if (Supabase.instance.client.auth.currentSession != null) {
-        print("🟣 EXISTING SESSION FOUND");
-
-        sessionReady = true;
-      }
-      // CASE 4: nothing found
-      else {
-        print("🔴 NO VALID RESET DATA FOUND");
+      setState(() {
         sessionReady = false;
-      }
-    } catch (e, stack) {
-      print("❌ RESET FLOW ERROR: $e");
-      print("📛 STACK TRACE: $stack");
-
-      sessionReady = false;
+        loading = false;
+      });
     }
-
-    setState(() => loading = false);
-
-    print("🏁 RESET FLOW END | sessionReady = $sessionReady");
   }
 
+  // ===================== UPDATE PASSWORD =====================
   Future<void> updatePassword() async {
-    print("🔐 UPDATE PASSWORD STARTED");
-
     FocusScope.of(context).unfocus();
 
     final password = passwordController.text.trim();
     final confirm = confirmController.text.trim();
 
-    print("🧾 PASSWORD LENGTH: ${password.length}");
-    print("🧾 CONFIRM LENGTH: ${confirm.length}");
+    if (password.isEmpty || confirm.isEmpty) {
+      showAppDialog(context, title: "Error", message: "Fields required");
+      return;
+    }
 
     if (password != confirm) {
-      print("❌ PASSWORDS DO NOT MATCH");
       showAppDialog(context, title: "Error", message: "Passwords not match");
       return;
     }
@@ -104,13 +108,9 @@ class _ResetPasswordState extends State<ResetPassword> {
     setState(() => isUpdating = true);
 
     try {
-      print("🚀 CALLING SUPABASE updateUser");
-
       await Supabase.instance.client.auth.updateUser(
         UserAttributes(password: password),
       );
-
-      print("✅ PASSWORD UPDATED SUCCESSFULLY");
 
       showAppDialog(
         context,
@@ -122,16 +122,22 @@ class _ResetPasswordState extends State<ResetPassword> {
       Future.delayed(const Duration(seconds: 1), () {
         Navigator.pushReplacementNamed(context, Login.routeName);
       });
-    } catch (e, stack) {
-      print("❌ UPDATE PASSWORD ERROR: $e");
-      print("📛 STACK: $stack");
-
+    } catch (e) {
       showAppDialog(context, title: "Error", message: e.toString());
     }
 
     setState(() => isUpdating = false);
   }
 
+  @override
+  void dispose() {
+    _sub?.cancel();
+    passwordController.dispose();
+    confirmController.dispose();
+    super.dispose();
+  }
+
+  // ===================== UI =====================
   @override
   Widget build(BuildContext context) {
     if (loading) {
@@ -142,7 +148,10 @@ class _ResetPasswordState extends State<ResetPassword> {
       return Scaffold(
         appBar: AppBar(title: const Text("Reset Password")),
         body: const Center(
-          child: Text("❌ Link expired or invalid", textAlign: TextAlign.center),
+          child: Text(
+            "❌ Invalid or expired reset link",
+            textAlign: TextAlign.center,
+          ),
         ),
       );
     }
@@ -165,6 +174,7 @@ class _ResetPasswordState extends State<ResetPassword> {
               decoration: const InputDecoration(labelText: "Confirm Password"),
             ),
             SizedBox(height: 24.h),
+
             SizedBox(
               width: double.infinity,
               height: 50.h,
@@ -172,7 +182,7 @@ class _ResetPasswordState extends State<ResetPassword> {
                 onPressed: isUpdating ? null : updatePassword,
                 child: isUpdating
                     ? const CircularProgressIndicator(color: Colors.white)
-                    : const Text("تعديل كلمة المرور"),
+                    : const Text("Update Password"),
               ),
             ),
           ],

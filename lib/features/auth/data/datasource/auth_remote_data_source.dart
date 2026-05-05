@@ -28,27 +28,8 @@ class AuthRemoteDataSource {
   Future<void> signInWithGoogle() async {
     await supabase.auth.signInWithOAuth(
       OAuthProvider.google,
-      redirectTo: kIsWeb ? null : 'com.example.green://login-callback',
+      redirectTo: kIsWeb ? null : 'com.example.green://login-callback/',
       authScreenLaunchMode: LaunchMode.externalApplication,
-    );
-  }
-
-  // ================= PHONE AUTH =================
-
-  Future<void> sendOtp({required String phone}) async {
-    await supabase.auth.signInWithOtp(
-      phone: phone,
-    );
-  }
-
-  Future<void> verifyOtp({
-    required String phone,
-    required String token,
-  }) async {
-    await supabase.auth.verifyOTP(
-      type: OtpType.sms,
-      phone: phone,
-      token: token,
     );
   }
 
