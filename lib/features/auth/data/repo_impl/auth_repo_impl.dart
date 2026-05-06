@@ -37,15 +37,6 @@ class AuthRepoImpl implements AuthRepository {
   }
 
   @override
-  Future<void> resetPassword(String email) async {
-    try {
-      await remote.resetPassword(email);
-    } catch (e) {
-      throw ErrorMapper.map(e);
-    }
-  }
-
-  @override
   Future<void> signOut() async {
     try {
       await remote.signOut();
@@ -56,4 +47,22 @@ class AuthRepoImpl implements AuthRepository {
 
   @override
   bool isLoggedIn() => remote.isLoggedIn();
+
+  @override
+  Future<void> sendResetPassword(String email) async {
+    try {
+      await remote.sendResetPassword(email);
+    } catch (e) {
+      throw ErrorMapper.map(e);
+    }
+  }
+
+  @override
+  Future<void> updatePassword(String password) async {
+    try {
+      await remote.updatePassword(password);
+    } catch (e) {
+      throw ErrorMapper.map(e);
+    }
+  }
 }

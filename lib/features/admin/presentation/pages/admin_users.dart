@@ -87,7 +87,7 @@ class AdminUsersPage extends StatelessWidget {
 
       body: BlocBuilder<AdminCubit, AdminState>(
         builder: (context, state) {
-          if (state.isLoadingUsers) {
+          if (state.isLoadingUsers && state.users.isEmpty) {
             return const Center(child: CircularProgressIndicator());
           }
 

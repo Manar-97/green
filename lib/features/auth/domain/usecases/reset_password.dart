@@ -3,12 +3,23 @@ import 'package:injectable/injectable.dart';
 import '../repo/auth_repo.dart';
 
 @injectable
-class ResetPasswordUseCase {
-  final AuthRepository repo;
+class SendResetPasswordUseCase {
+  final AuthRepository repository;
 
-  ResetPasswordUseCase(this.repo);
+  SendResetPasswordUseCase(this.repository);
 
   Future<void> call(String email) {
-    return repo.resetPassword(email);
+    return repository.sendResetPassword(email);
+  }
+}
+
+@injectable
+class UpdatePasswordUseCase {
+  final AuthRepository repository;
+
+  UpdatePasswordUseCase(this.repository);
+
+  Future<void> call(String newPassword) {
+    return repository.updatePassword(newPassword);
   }
 }

@@ -26,149 +26,120 @@ class _RegisterState extends State<Register> {
   bool obscure2 = true;
 
   @override
-  void dispose() {
-    emailController.dispose();
-    passwordController.dispose();
-    confirmController.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      resizeToAvoidBottomInset: true,
-      body: Directionality(
-        textDirection: TextDirection.rtl,
-        child: Container(
-          decoration: AppStyles.gradientBg,
-          child: SafeArea(
-            child: GestureDetector(
-              onTap: () => FocusScope.of(context).unfocus(),
-              child: BlocConsumer<AuthCubit, AuthState>(
-                listener: (context, state) {
-                  if (state is AuthSuccess) {
-                    showAppDialog(
-                      context,
-                      title: "تم إنشاء الحساب 🎉",
-                      message:
-                          "افتح بريدك الإلكتروني واضغط على رابط التفعيل لتفعيل الحساب 📩",
-                      isSuccess: true,
-                    );
-                  } else if (state is AuthError) {
-                    showErrorDialog(
-                      context,
-                      message: state.message,
-                      type: state.type,
-                    );
-                  }
-                },
-                builder: (context, state) {
-                  return SingleChildScrollView(
-                    keyboardDismissBehavior:
-                        ScrollViewKeyboardDismissBehavior.onDrag,
-                    child: ConstrainedBox(
-                      constraints: BoxConstraints(
-                        minHeight: MediaQuery.of(context).size.height,
-                      ),
-                      child: Padding(
-                        padding: EdgeInsets.all(16.w),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              "إنشاء حساب جديد 🌱",
-                              style: TextStyle(
-                                fontSize: 24.sp,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
+    return BlocConsumer<AuthCubit, AuthState>(
+      listener: (context, state) {
+        if (state is AuthSuccess) {
+          showAppDialog(
+            context,
+            title: "تم إنشاء الحساب",
+            message: "افحص الإيميل 📩",
+            isSuccess: true,
+          );
+        }
 
-                            SizedBox(height: 50.h),
+        if (state is AuthError) {
+          showErrorDialog(context, message: state.message, type: state.type);
+        }
+      },
+      builder: (context, state) {
+        final loading = state is AuthLoading;
 
-                            AppTextField(
-                              controller: emailController,
-                              label: "الإيميل",
-                              icon: Icons.email,
-                            ),
-
-                            SizedBox(height: 16.h),
-
-                            AppTextField(
-                              controller: passwordController,
-                              label: "كلمة المرور",
-                              icon: Icons.lock,
-                              obscure: obscure1,
-                              suffixIcon: IconButton(
-                                icon: Icon(
-                                  obscure1
-                                      ? Icons.visibility_off
-                                      : Icons.visibility,
-                                ),
-                                onPressed: () =>
-                                    setState(() => obscure1 = !obscure1),
-                              ),
-                            ),
-
-                            SizedBox(height: 16.h),
-
-                            AppTextField(
-                              controller: confirmController,
-                              label: "تأكيد كلمة المرور",
-                              icon: Icons.lock_outline,
-                              obscure: obscure2,
-                              suffixIcon: IconButton(
-                                icon: Icon(
-                                  obscure2
-                                      ? Icons.visibility_off
-                                      : Icons.visibility,
-                                ),
-                                onPressed: () =>
-                                    setState(() => obscure2 = !obscure2),
-                              ),
-                            ),
-                            SizedBox(height: 25.h),
-
-                            SizedBox(
-                              width: double.infinity,
-                              child: AuthButton(
-                                text: "تسجيل",
-                                onPressed: () {
-                                  FocusScope.of(context).unfocus();
-
-                                  context.read<AuthCubit>().register(
-                                    emailController.text.trim(),
-                                    passwordController.text.trim(),
-                                  );
-
-                                  emailController.clear();
-                                  passwordController.clear();
-                                  confirmController.clear();
-                                },
-                              ),
-                            ),
-
-                            TextButton(
-                              onPressed: () {
-                                Navigator.pushNamed(context, Login.routeName);
-                              },
-                              child: Text(
-                                "لدي حساب",
-                                style: TextStyle(fontSize: 14.sp),
-                              ),
-                            ),
-
-                            SizedBox(height: 40.h),
-                          ],
+        return Directionality(
+          textDirection: TextDirection.rtl,
+          child: Scaffold(
+            body: Container(
+              decoration: AppStyles.gradientBg,
+              child: SafeArea(
+                child: Padding(
+                  padding: EdgeInsets.all(16.w),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        "إنشاء حساب جديد 🌱",
+                        style: TextStyle(
+                          fontSize: 24.sp,
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
-                    ),
-                  );
-                },
+
+                      SizedBox(height: 40.h),
+
+                      AppTextField(
+                        controller: emailController,
+                        label: "الإيميل",
+                        icon: Icons.email,
+                      ),
+
+                      SizedBox(height: 16.h),
+
+                      AppTextField(
+                        controller: passwordController,
+                        label: "كلمة المرور",
+                        icon: Icons.lock,
+                        obscure: obscure1,
+                        suffixIcon: IconButton(
+                          icon: Icon(
+                            obscure1 ? Icons.visibility_off : Icons.visibility,
+                          ),
+                          onPressed: () => setState(() => obscure1 = !obscure1),
+                        ),
+                      ),
+
+                      SizedBox(height: 16.h),
+
+                      AppTextField(
+                        controller: confirmController,
+                        label: "تأكيد كلمة المرور",
+                        icon: Icons.lock,
+                        obscure: obscure2,
+                        suffixIcon: IconButton(
+                          icon: Icon(
+                            obscure2 ? Icons.visibility_off : Icons.visibility,
+                          ),
+                          onPressed: () => setState(() => obscure2 = !obscure2),
+                        ),
+                      ),
+
+                      SizedBox(height: 20.h),
+
+                      AuthButton(
+                        text: "تسجيل",
+                        loading: loading,
+                        onPressed: () {
+                          if (passwordController.text != confirmController.text) {
+                            showAppDialog(
+                              context,
+                              title: "خطأ",
+                              message: "كلمات المرور غير متطابقة",
+                            );
+                            return;
+                          }
+
+                          context.read<AuthCubit>().register(
+                            emailController.text.trim(),
+                            passwordController.text.trim(),
+                          );
+                        },
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          Navigator.pushNamed(context, Login.routeName);
+                        },
+                        child: Text(
+                          "لدي حساب",
+                          style: TextStyle(fontSize: 14.sp),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               ),
             ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 }

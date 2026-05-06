@@ -39,7 +39,13 @@ class AdminCubit extends Cubit<AdminState> {
     );
 
     _userSub = repo.watchUsers().listen((data) {
-      emit(state.copyWith(users: data, error: null));
+      emit(
+        state.copyWith(
+          users: data,
+          isLoadingUsers: false, // 🔥 مهم جدًا
+          error: null,
+        ),
+      );
     }, onError: (_) => _reconnect());
   }
 
@@ -86,50 +92,45 @@ class AdminCubit extends Cubit<AdminState> {
     }
   }
 
+  void setFilterDay(DateTime? day) {
+    emit(state.copyWith(selectedDay: day));
+  }
+
   Future<void> approve(String requestId, String userId) async {
     emit(state.copyWith(isLoadingUsers: true));
 
     try {
       await repo.approveRequest(requestId, userId);
-
-      final updated = await repo.getAllUsers();
-
-      emit(state.copyWith(isLoadingUsers: false, users: updated));
     } catch (e) {
       final err = ErrorMapper.map(e);
-
       emit(state.copyWith(isLoadingUsers: false, error: err.message));
     }
   }
 
-  Future<void> filterRequestsByDay(DateTime day) async {
-    emit(state.copyWith(isLoadingRequests: true));
-
-    if (!await NetworkGuard.hasInternet()) {
-      emit(state.copyWith(
-        isLoadingRequests: false,
-        error: "❌ مفيش إنترنت",
-      ));
-      return;
-    }
-
-    try {
-      final requests = await repo.getRequestsByDay(day);
-
-      emit(state.copyWith(
-        isLoadingRequests: false,
-        requests: requests,
-      ));
-    } catch (e) {
-      final err = ErrorMapper.map(e);
-
-      emit(state.copyWith(
-        isLoadingRequests: false,
-        error: err.message,
-        errorType: err.type,
-      ));
-    }
-  }
+  // Future<void> filterRequestsByDay(DateTime day) async {
+  //   emit(state.copyWith(isLoadingRequests: true));
+  //
+  //   if (!await NetworkGuard.hasInternet()) {
+  //     emit(state.copyWith(isLoadingRequests: false, error: "❌ مفيش إنترنت"));
+  //     return;
+  //   }
+  //
+  //   try {
+  //     final requests = await repo.getRequestsByDay(day);
+  //
+  //     emit(state.copyWith(isLoadingRequests: false, requests: requests));
+  //   } catch (e) {
+  //     final err = ErrorMapper.map(e);
+  //
+  //     emit(
+  //       state.copyWith(
+  //         isLoadingRequests: false,
+  //         error: err.message,
+  //         errorType: err.type,
+  //       ),
+  //     );
+  //   }
+  // }
 
   @override
   Future<void> close() {

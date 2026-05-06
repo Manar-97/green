@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+
 import '../../../../core/errors/error_dialog.dart';
 import '../../../../core/widgets/app_dialog.dart';
 import '../../../../core/widgets/app_style.dart';
@@ -9,6 +10,7 @@ import '../../../user/presentation/pages/home.dart';
 import '../cubit/auth_cubit.dart';
 import '../widgets/auth_button.dart';
 import '../widgets/custom_text_field.dart';
+import 'forgot_password.dart';
 import 'register.dart';
 
 class Login extends StatefulWidget {
@@ -24,7 +26,6 @@ class _LoginState extends State<Login> {
   final passwordController = TextEditingController();
 
   bool obscurePassword = true;
-  bool isSendingReset = false;
 
   @override
   void dispose() {
@@ -33,67 +34,14 @@ class _LoginState extends State<Login> {
     super.dispose();
   }
 
-  void showForgotPasswordSheet(BuildContext context, AuthCubit cubit) {
-    final emailController = TextEditingController();
+  void _navigate(AuthState state) {
+    if (state is AuthLoggedInAdmin) {
+      Navigator.pushReplacementNamed(context, AdminHome.routeName);
+    }
 
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true, // مهم جدًا
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20.r)),
-      ),
-      builder: (ctx) {
-        return AnimatedPadding(
-          duration: const Duration(milliseconds: 200),
-          curve: Curves.easeOut,
-          padding: EdgeInsets.only(
-            left: 16.w,
-            right: 16.w,
-            top: 16.h,
-            bottom: MediaQuery.of(ctx).viewInsets.bottom + 16.h, // 👈 الكيبورد
-          ),
-          child: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  "Reset Password",
-                  style: TextStyle(
-                    fontSize: 18.sp,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-
-                SizedBox(height: 12.h),
-
-                TextField(
-                  controller: emailController,
-                  keyboardType: TextInputType.emailAddress,
-                  decoration: const InputDecoration(
-                    labelText: "Enter your email",
-                    border: OutlineInputBorder(),
-                  ),
-                ),
-
-                SizedBox(height: 16.h),
-
-                SizedBox(
-                  width: double.infinity,
-                  height: 50.h,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.pop(ctx);
-                      cubit.forgotPassword(emailController.text.trim());
-                    },
-                    child: const Text("Send Reset Link"),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
+    if (state is AuthLoggedInUser) {
+      Navigator.pushReplacementNamed(context, UserHome.routeName);
+    }
   }
 
   @override
@@ -110,18 +58,14 @@ class _LoginState extends State<Login> {
               child: BlocConsumer<AuthCubit, AuthState>(
                 listener: (context, state) {
                   print("STATE = $state");
-                  if (state is AuthLoggedInAdmin) {
-                    Navigator.pushReplacementNamed(
-                      context,
-                      AdminHome.routeName,
-                    );
-                  }
-                  if (state is AuthLoggedInUser) {
-                    print("STATE = $state");
-                    Navigator.pushReplacementNamed(context, UserHome.routeName);
-                  }
+
+                  // 🔵 Navigation
+                  _navigate(state);
+
+                  // ❌ Errors
                   if (state is AuthError) {
                     final msg = state.message.toLowerCase();
+
                     if (msg.contains("rate limit")) {
                       showAppDialog(
                         context,
@@ -137,16 +81,11 @@ class _LoginState extends State<Login> {
                       );
                     }
                   }
-                  if (state is AuthPasswordSent) {
-                    showAppDialog(
-                      context,
-                      title: "Success",
-                      message: "Check your email 📩",
-                      isSuccess: true,
-                    );
-                  }
                 },
                 builder: (context, state) {
+                  final isLoading =
+                      state is AuthLoading || state is AuthGoogleLoading;
+
                   return SingleChildScrollView(
                     keyboardDismissBehavior:
                         ScrollViewKeyboardDismissBehavior.onDrag,
@@ -168,12 +107,15 @@ class _LoginState extends State<Login> {
                             ),
 
                             SizedBox(height: 50.h),
+
                             AppTextField(
                               controller: emailController,
                               label: "الإيميل",
                               icon: Icons.email,
                             ),
+
                             SizedBox(height: 16.h),
+
                             AppTextField(
                               controller: passwordController,
                               label: "كلمة المرور",
@@ -186,19 +128,20 @@ class _LoginState extends State<Login> {
                                       : Icons.visibility,
                                 ),
                                 onPressed: () {
-                                  setState(
-                                    () => obscurePassword = !obscurePassword,
-                                  );
+                                  setState(() {
+                                    obscurePassword = !obscurePassword;
+                                  });
                                 },
                               ),
                             ),
+
                             Align(
                               alignment: Alignment.centerLeft,
                               child: TextButton(
                                 onPressed: () {
-                                  showForgotPasswordSheet(
+                                  Navigator.pushNamed(
                                     context,
-                                    context.read<AuthCubit>(),
+                                    ForgotPasswordPage.routeName,
                                   );
                                 },
                                 child: const Text("نسيت كلمة المرور؟"),
@@ -206,25 +149,26 @@ class _LoginState extends State<Login> {
                             ),
 
                             SizedBox(height: 20.h),
+
                             AuthButton(
                               text: "تسجيل الدخول",
-                              loading: state is AuthLoading,
+                              loading: isLoading,
                               onPressed: () {
-                                FocusScope.of(
-                                  context,
-                                ).unfocus(); // يقفل الكيبورد
+                                FocusScope.of(context).unfocus();
 
                                 context.read<AuthCubit>().login(
                                   emailController.text.trim(),
                                   passwordController.text.trim(),
                                 );
 
-                                emailController.clear(); // تنظيف
-                                passwordController.clear(); // تنظيف
+                                emailController.clear();
+                                passwordController.clear();
                               },
                             ),
+
                             SizedBox(height: 16.h),
 
+                            // Google login
                             SizedBox(
                               width: double.infinity,
                               child: ElevatedButton.icon(
@@ -246,6 +190,7 @@ class _LoginState extends State<Login> {
                                 ),
                               ),
                             ),
+
                             TextButton(
                               onPressed: () {
                                 Navigator.pushNamed(

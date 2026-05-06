@@ -11,6 +11,7 @@ class AdminState {
 
   final List<RequestModel> requests;
   final List<UserModel> users;
+  final DateTime? selectedDay; // 👈 الفلتر
 
   const AdminState({
     this.isLoadingRequests = false,
@@ -19,6 +20,7 @@ class AdminState {
     this.errorType,
     this.requests = const [],
     this.users = const [],
+    this.selectedDay,
   });
 
   AdminState copyWith({
@@ -29,6 +31,7 @@ class AdminState {
     List<RequestModel>? requests,
     List<UserModel>? users,
     bool clearError = false,
+    DateTime? selectedDay,
   }) {
     return AdminState(
       isLoadingRequests: isLoadingRequests ?? this.isLoadingRequests,
@@ -37,6 +40,7 @@ class AdminState {
       errorType: clearError ? null : (errorType ?? this.errorType),
       requests: requests ?? this.requests,
       users: users ?? this.users,
+      selectedDay: selectedDay,
     );
   }
 }

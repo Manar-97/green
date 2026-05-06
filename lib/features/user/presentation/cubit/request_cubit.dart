@@ -35,7 +35,12 @@ class RequestCubit extends Cubit<RequestState> {
       ));
     }
   }
-
+  void resetStatus() {
+    emit(state.copyWith(
+      success: false,
+      clearError: true,
+    ));
+  }
   Future<void> submitRequest({
     required String wasteType,
     required String name,

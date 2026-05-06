@@ -10,7 +10,6 @@ import '../cubit/request_state.dart';
 import '../widgets/custom_text_field.dart';
 import '../widgets/waste_type_chip.dart';
 import '../widgets/profile_dialog.dart';
-import 'about_us.dart';
 
 class RequestScreen extends StatefulWidget {
   const RequestScreen({super.key});
@@ -132,10 +131,12 @@ class _RequestScreenState extends State<RequestScreen> {
             message: "تم إرسال الطلب بنجاح",
             isSuccess: true,
           );
+          context.read<RequestCubit>().resetStatus(); // ✅ مهم
         }
 
         if (state.error != null) {
           showAppDialog(context, title: "خطأ", message: state.error!);
+          context.read<RequestCubit>().resetStatus(); // ✅ مهم
         }
       },
       builder: (context, state) {

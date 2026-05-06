@@ -5,7 +5,7 @@ import '../../../../core/widgets/app_style.dart';
 
 class AuthButton extends StatelessWidget {
   final String text;
-  final VoidCallback onPressed;
+  final VoidCallback? onPressed;
   final bool loading;
 
   const AuthButton({

@@ -28,3 +28,6 @@ class AuthError extends AuthState {
 
   AuthError({required this.message, required this.type});
 }
+class AuthPasswordRecovery extends AuthState {}
+class AuthGoogleLoading extends AuthState {}
+class AuthGoogleSuccess extends AuthState {}

@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:intl/intl.dart';
 
 class RequestCard extends StatelessWidget {
   final String name;
   final String wasteType;
   final String phone;
-  final String nationalId;
+  final String requestDate;
   final String status;
   final VoidCallback? onApprove;
 
@@ -14,10 +15,19 @@ class RequestCard extends StatelessWidget {
     required this.name,
     required this.wasteType,
     required this.phone,
-    required this.nationalId,
+    required this.requestDate,
     required this.status,
     this.onApprove,
   });
+
+  String formatDate(String date) {
+    try {
+      final parsed = DateTime.parse(date);
+      return DateFormat('yyyy/MM/dd - hh:mm a').format(parsed);
+    } catch (e) {
+      return date; // fallback لو حصل error
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -33,7 +43,7 @@ class RequestCard extends StatelessWidget {
           children: [
             Text("المخلفات: $wasteType"),
             Text("الهاتف: $phone"),
-            Text("الرقم القومي: $nationalId"),
+            Text("الوقت: ${formatDate(requestDate)}"),
           ],
         ),
         trailing: ElevatedButton(

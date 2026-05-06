@@ -1,12 +1,14 @@
-import 'package:flutter/foundation.dart';
 import 'package:injectable/injectable.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:supabase_flutter/supabase_flutter.dart' as supaBase;
 
 @singleton
 class AuthRemoteDataSource {
-  final supabase = Supabase.instance.client;
+  final supabase = supaBase.Supabase.instance.client;
 
-  Future<User> signUp({required String email, required String password}) async {
+  Future<supaBase.User> signUp({
+    required String email,
+    required String password,
+  }) async {
     final response = await supabase.auth.signUp(
       email: email,
       password: password,
@@ -27,9 +29,9 @@ class AuthRemoteDataSource {
 
   Future<void> signInWithGoogle() async {
     await supabase.auth.signInWithOAuth(
-      OAuthProvider.google,
-      redirectTo: kIsWeb ? null : 'com.example.green://login-callback/',
-      authScreenLaunchMode: LaunchMode.externalApplication,
+      supaBase.OAuthProvider.google,
+      redirectTo: 'com.example.green://login-callback',
+      authScreenLaunchMode: supaBase.LaunchMode.externalApplication,
     );
   }
 
@@ -37,14 +39,24 @@ class AuthRemoteDataSource {
     await supabase.auth.signOut();
   }
 
-  Future<void> resetPassword(String email) async {
+  Future<void> sendResetPassword(String email) async {
     await supabase.auth.resetPasswordForEmail(
       email,
       redirectTo: 'com.example.green://reset-callback',
     );
   }
 
+  Future<void> updatePassword(String password) async {
+    final res = await supabase.auth.updateUser(
+      supaBase.UserAttributes(password: password),
+    );
+
+    if (res.user == null) {
+      throw Exception("Password update failed");
+    }
+  }
+
   bool isLoggedIn() => supabase.auth.currentUser != null;
 
-  User? getCurrentUser() => supabase.auth.currentUser;
+  supaBase.User? getCurrentUser() => supabase.auth.currentUser;
 }

@@ -58,9 +58,6 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i1011.CheckAuthUseCase>(
       () => _i1011.CheckAuthUseCase(gh<_i170.AuthRepository>()),
     );
-    gh.factory<_i1066.ResetPasswordUseCase>(
-      () => _i1066.ResetPasswordUseCase(gh<_i170.AuthRepository>()),
-    );
     gh.factory<_i920.SignInUseCase>(
       () => _i920.SignInUseCase(gh<_i170.AuthRepository>()),
     );
@@ -73,14 +70,21 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i190.SignUpUseCase>(
       () => _i190.SignUpUseCase(gh<_i170.AuthRepository>()),
     );
-    gh.lazySingleton<_i117.AuthCubit>(
+    gh.factory<_i1066.SendResetPasswordUseCase>(
+      () => _i1066.SendResetPasswordUseCase(gh<_i170.AuthRepository>()),
+    );
+    gh.factory<_i1066.UpdatePasswordUseCase>(
+      () => _i1066.UpdatePasswordUseCase(gh<_i170.AuthRepository>()),
+    );
+    gh.factory<_i117.AuthCubit>(
       () => _i117.AuthCubit(
         signIn: gh<_i920.SignInUseCase>(),
         signUp: gh<_i190.SignUpUseCase>(),
         signOut: gh<_i568.SignOutUseCase>(),
-        resetPassword: gh<_i1066.ResetPasswordUseCase>(),
+        sendResetPassword: gh<_i1066.SendResetPasswordUseCase>(),
         checkAuth: gh<_i1011.CheckAuthUseCase>(),
         signInWithGoogle: gh<_i692.SignInWithGoogleUseCase>(),
+        updatePassword: gh<_i1066.UpdatePasswordUseCase>(),
       ),
     );
     return this;

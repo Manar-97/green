@@ -1,191 +1,160 @@
-import 'dart:async';
-
-import 'package:app_links/app_links.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
+import '../cubit/auth_cubit.dart';
+import '../../../../core/widgets/app_style.dart';
+import '../widgets/auth_button.dart';
+import '../widgets/custom_text_field.dart';
+import 'login.dart';
 
-import '../../../../core/widgets/app_dialog.dart';
-import '../pages/login.dart';
-
-class ResetPassword extends StatefulWidget {
+class ResetPasswordPage extends StatefulWidget {
   static const routeName = "reset-password";
 
-  const ResetPassword({super.key});
+  const ResetPasswordPage({super.key});
 
   @override
-  State<ResetPassword> createState() => _ResetPasswordState();
+  State<ResetPasswordPage> createState() => _ResetPasswordPageState();
 }
 
-class _ResetPasswordState extends State<ResetPassword> {
+class _ResetPasswordPageState extends State<ResetPasswordPage> {
   final passwordController = TextEditingController();
   final confirmController = TextEditingController();
 
-  late final AppLinks _appLinks;
-  StreamSubscription? _sub;
-
-  bool loading = true;
-  bool sessionReady = false;
-  bool isUpdating = false;
-
-  @override
-  void initState() {
-    super.initState();
-
-    _appLinks = AppLinks();
-    _initDeepLink();
-  }
-
-  // ===================== DEEP LINK =====================
-  Future<void> _initDeepLink() async {
-    try {
-      final initialUri = await _appLinks.getInitialLink();
-
-      if (initialUri != null) {
-        _handleUri(initialUri);
-      }
-
-      _sub = _appLinks.uriLinkStream.listen((uri) {
-        if (uri != null) {
-          _handleUri(uri);
-        }
-      });
-    } catch (e) {
-      print("❌ DeepLink error: $e");
-      setState(() {
-        loading = false;
-        sessionReady = false;
-      });
-    }
-  }
-
-  Future<void> _handleUri(Uri uri) async {
-    print("🔗 RESET LINK: $uri");
-
-    try {
-      if (uri.host == "reset-callback") {
-        await Supabase.instance.client.auth.exchangeCodeForSession(
-          uri.toString(),
-        );
-
-        setState(() {
-          sessionReady = true;
-          loading = false;
-        });
-      } else {
-        setState(() {
-          sessionReady = false;
-          loading = false;
-        });
-      }
-    } catch (e) {
-      print("❌ RESET ERROR: $e");
-
-      setState(() {
-        sessionReady = false;
-        loading = false;
-      });
-    }
-  }
-
-  // ===================== UPDATE PASSWORD =====================
-  Future<void> updatePassword() async {
-    FocusScope.of(context).unfocus();
-
-    final password = passwordController.text.trim();
-    final confirm = confirmController.text.trim();
-
-    if (password.isEmpty || confirm.isEmpty) {
-      showAppDialog(context, title: "Error", message: "Fields required");
-      return;
-    }
-
-    if (password != confirm) {
-      showAppDialog(context, title: "Error", message: "Passwords not match");
-      return;
-    }
-
-    setState(() => isUpdating = true);
-
-    try {
-      await Supabase.instance.client.auth.updateUser(
-        UserAttributes(password: password),
-      );
-
-      showAppDialog(
-        context,
-        title: "Success",
-        message: "Password updated 🎉",
-        isSuccess: true,
-      );
-
-      Future.delayed(const Duration(seconds: 1), () {
-        Navigator.pushReplacementNamed(context, Login.routeName);
-      });
-    } catch (e) {
-      showAppDialog(context, title: "Error", message: e.toString());
-    }
-
-    setState(() => isUpdating = false);
-  }
+  bool obscurePassword1 = true;
+  bool obscurePassword2 = true;
+  bool isSendingReset = false;
 
   @override
   void dispose() {
-    _sub?.cancel();
     passwordController.dispose();
     confirmController.dispose();
     super.dispose();
   }
 
-  // ===================== UI =====================
+  void submit() {
+    final pass = passwordController.text.trim();
+    final confirm = confirmController.text.trim();
+
+    if (pass.isEmpty || confirm.isEmpty) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text("من فضلك املأ كل الحقول")));
+      return;
+    }
+
+    if (pass != confirm) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("كلمتا المرور غير متطابقتين")),
+      );
+      return;
+    }
+
+    context.read<AuthCubit>().updatePass(pass);
+  }
+
   @override
   Widget build(BuildContext context) {
-    if (loading) {
-      return const Scaffold(body: Center(child: CircularProgressIndicator()));
-    }
-
-    if (!sessionReady) {
-      return Scaffold(
-        appBar: AppBar(title: const Text("Reset Password")),
-        body: const Center(
-          child: Text(
-            "❌ Invalid or expired reset link",
-            textAlign: TextAlign.center,
-          ),
-        ),
-      );
-    }
-
     return Scaffold(
-      appBar: AppBar(title: const Text("Reset Password")),
-      body: Padding(
-        padding: EdgeInsets.all(16.h),
-        child: Column(
-          children: [
-            TextField(
-              controller: passwordController,
-              obscureText: true,
-              decoration: const InputDecoration(labelText: "New Password"),
-            ),
-            SizedBox(height: 16.h),
-            TextField(
-              controller: confirmController,
-              obscureText: true,
-              decoration: const InputDecoration(labelText: "Confirm Password"),
-            ),
-            SizedBox(height: 24.h),
+      body: Directionality(
+        textDirection: TextDirection.rtl,
+        child: Container(
+          decoration: AppStyles.gradientBg,
+          child: SafeArea(
+            child: BlocConsumer<AuthCubit, AuthState>(
+              listener: (context, state) {
+                if (state is AuthSuccess) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text("تم تحديث كلمة المرور بنجاح"),
+                      backgroundColor: Colors.green,
+                    ),
+                  );
+                  Navigator.pushNamedAndRemoveUntil(
+                    context,
+                    Login.routeName,
+                    (route) => false,
+                  );
+                }
 
-            SizedBox(
-              width: double.infinity,
-              height: 50.h,
-              child: ElevatedButton(
-                onPressed: isUpdating ? null : updatePassword,
-                child: isUpdating
-                    ? const CircularProgressIndicator(color: Colors.white)
-                    : const Text("Update Password"),
-              ),
+                if (state is AuthError) {
+                  ScaffoldMessenger.of(
+                    context,
+                  ).showSnackBar(SnackBar(content: Text(state.message)));
+                }
+              },
+              builder: (context, state) {
+                return Center(
+                  child: SingleChildScrollView(
+                    child: Padding(
+                      padding: EdgeInsets.all(16.w),
+                      child: Column(
+                        children: [
+                          Text(
+                            "إعادة تعيين كلمة المرور 🔐",
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: 26.sp,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+
+                          SizedBox(height: 40.h),
+
+                          AppTextField(
+                            controller: passwordController,
+                            label: "كلمة المرور الجديدة",
+                            icon: Icons.lock,
+                            obscure: obscurePassword1,
+                            suffixIcon: IconButton(
+                              icon: Icon(
+                                obscurePassword1
+                                    ? Icons.visibility_off
+                                    : Icons.visibility,
+                              ),
+                              onPressed: () {
+                                setState(
+                                  () => obscurePassword1 = !obscurePassword1,
+                                );
+                              },
+                            ),
+                          ),
+
+                          SizedBox(height: 16.h),
+
+                          AppTextField(
+                            controller: confirmController,
+                            label: "تأكيد كلمة المرور الجديدة",
+                            icon: Icons.lock,
+                            obscure: obscurePassword2,
+                            suffixIcon: IconButton(
+                              icon: Icon(
+                                obscurePassword2
+                                    ? Icons.visibility_off
+                                    : Icons.visibility,
+                              ),
+                              onPressed: () {
+                                setState(
+                                  () => obscurePassword2 = !obscurePassword2,
+                                );
+                              },
+                            ),
+                          ),
+
+                          SizedBox(height: 30.h),
+
+                          AuthButton(
+                            text: "تحديث كلمة المرور",
+                            loading: state is AuthLoading,
+                            onPressed: submit,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                );
+              },
             ),
-          ],
+          ),
         ),
       ),
     );
