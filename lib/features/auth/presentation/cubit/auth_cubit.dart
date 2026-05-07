@@ -243,7 +243,13 @@ class AuthCubit extends Cubit<AuthState> {
 
   // ================= ERROR MAPPER =================
   AuthError _mapError(dynamic e) {
+    // لو هو already AppException متعيديش mapping
+    if (e is AppException) {
+      return AuthError(message: e.message, type: e.type);
+    }
+
     final err = ErrorMapper.map(e);
+
     return AuthError(message: err.message, type: err.type);
   }
 

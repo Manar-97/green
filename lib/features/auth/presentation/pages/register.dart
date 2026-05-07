@@ -108,7 +108,9 @@ class _RegisterState extends State<Register> {
                         text: "تسجيل",
                         loading: loading,
                         onPressed: () {
-                          if (passwordController.text != confirmController.text) {
+                          FocusScope.of(context).unfocus();
+                          if (passwordController.text !=
+                              confirmController.text) {
                             showAppDialog(
                               context,
                               title: "خطأ",
@@ -116,16 +118,20 @@ class _RegisterState extends State<Register> {
                             );
                             return;
                           }
-
                           context.read<AuthCubit>().register(
                             emailController.text.trim(),
                             passwordController.text.trim(),
                           );
+                          emailController.clear();
+                          passwordController.clear();
                         },
                       ),
                       TextButton(
                         onPressed: () {
-                          Navigator.pushNamed(context, Login.routeName);
+                          Navigator.pushReplacementNamed(
+                            context,
+                            Login.routeName,
+                          );
                         },
                         child: Text(
                           "لدي حساب",

@@ -116,4 +116,13 @@ class AdminRepoImpl implements AdminRepository {
       throw ErrorMapper.map(e);
     }
   }
+
+  @override
+  Future<void> deleteRequest(String requestId) async {
+    try {
+      await supabase.from('requests').delete().eq('id', requestId);
+    } catch (e) {
+      throw ErrorMapper.map(e);
+    }
+  }
 }

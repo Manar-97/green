@@ -6,7 +6,7 @@ abstract class AdminRepository {
   Future<List<RequestModel>> getAllRequests();
   Future<List<UserModel>> getAllUsers();
   Future<UserModel> getProfile(String userId);
-
+  Future<void> deleteRequest(String requestId);
   // 🟢 realtime streams (LIVE updates)
   Stream<List<RequestModel>> watchRequests();
   Stream<List<UserModel>> watchUsers();

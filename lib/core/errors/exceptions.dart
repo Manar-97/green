@@ -17,22 +17,30 @@ class AppException {
   AppException(this.message, this.type);
 }
 
-class NetworkException extends AppException {
-  NetworkException([String message = "No internet connection"])
+// ================= NETWORK =================
+
+class NetworkAppException extends AppException {
+  NetworkAppException([String message = "No internet connection"])
     : super(message, ErrorType.network);
 }
 
-class AuthException extends AppException {
-  AuthException([String message = "Authentication error"])
+// ================= AUTH =================
+
+class AuthAppException extends AppException {
+  AuthAppException([String message = "Authentication error"])
     : super(message, ErrorType.auth);
 }
 
-class DatabaseException extends AppException {
-  DatabaseException([String message = "Database error"])
+// ================= DATABASE =================
+
+class DatabaseAppException extends AppException {
+  DatabaseAppException([String message = "Database error"])
     : super(message, ErrorType.database);
 }
 
-class StorageException extends AppException {
-  StorageException([String message = "Storage error"])
+// ================= STORAGE =================
+
+class StorageAppException extends AppException {
+  StorageAppException([String message = "Storage error"])
     : super(message, ErrorType.storage);
 }

@@ -106,32 +106,33 @@ class AdminCubit extends Cubit<AdminState> {
       emit(state.copyWith(isLoadingUsers: false, error: err.message));
     }
   }
+  Future<void> deleteRequest(String requestId) async {
+    try {
+      emit(state.copyWith(isLoadingRequests: true));
 
-  // Future<void> filterRequestsByDay(DateTime day) async {
-  //   emit(state.copyWith(isLoadingRequests: true));
-  //
-  //   if (!await NetworkGuard.hasInternet()) {
-  //     emit(state.copyWith(isLoadingRequests: false, error: "❌ مفيش إنترنت"));
-  //     return;
-  //   }
-  //
-  //   try {
-  //     final requests = await repo.getRequestsByDay(day);
-  //
-  //     emit(state.copyWith(isLoadingRequests: false, requests: requests));
-  //   } catch (e) {
-  //     final err = ErrorMapper.map(e);
-  //
-  //     emit(
-  //       state.copyWith(
-  //         isLoadingRequests: false,
-  //         error: err.message,
-  //         errorType: err.type,
-  //       ),
-  //     );
-  //   }
-  // }
+      await repo.deleteRequest(requestId);
 
+      // تحديث الداتا بعد الحذف
+      final requests = await repo.getAllRequests();
+
+      emit(
+        state.copyWith(
+          isLoadingRequests: false,
+          requests: requests,
+          error: null,
+        ),
+      );
+    } catch (e) {
+      final err = ErrorMapper.map(e);
+
+      emit(
+        state.copyWith(
+          isLoadingRequests: false,
+          error: err.message,
+        ),
+      );
+    }
+  }
   @override
   Future<void> close() {
     _reqSub?.cancel();

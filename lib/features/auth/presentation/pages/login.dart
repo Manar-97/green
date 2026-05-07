@@ -36,11 +36,23 @@ class _LoginState extends State<Login> {
 
   void _navigate(AuthState state) {
     if (state is AuthLoggedInAdmin) {
-      Navigator.pushReplacementNamed(context, AdminHome.routeName);
+      emailController.clear();
+      passwordController.clear();
+      Navigator.pushNamedAndRemoveUntil(
+        context,
+        AdminHome.routeName,
+        (route) => false,
+      );
     }
 
     if (state is AuthLoggedInUser) {
-      Navigator.pushReplacementNamed(context, UserHome.routeName);
+      emailController.clear();
+      passwordController.clear();
+      Navigator.pushNamedAndRemoveUntil(
+        context,
+        UserHome.routeName,
+        (route) => false,
+      );
     }
   }
 
@@ -160,9 +172,6 @@ class _LoginState extends State<Login> {
                                   emailController.text.trim(),
                                   passwordController.text.trim(),
                                 );
-
-                                emailController.clear();
-                                passwordController.clear();
                               },
                             ),
 
@@ -173,17 +182,14 @@ class _LoginState extends State<Login> {
                               width: double.infinity,
                               child: ElevatedButton.icon(
                                 style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.white,
+                                  backgroundColor: Colors.grey[100],
                                   foregroundColor: Colors.black,
                                   padding: EdgeInsets.symmetric(vertical: 12.h),
                                 ),
                                 onPressed: () {
                                   context.read<AuthCubit>().loginWithGoogle();
                                 },
-                                icon: Image.network(
-                                  'https://cdn-icons-png.flaticon.com/512/281/281764.png',
-                                  height: 24.h,
-                                ),
+                                icon: Image.asset('assets/g.png', height: 26.h),
                                 label: Text(
                                   "تسجيل باستخدام Gmail",
                                   style: TextStyle(fontSize: 16.sp),
@@ -193,7 +199,7 @@ class _LoginState extends State<Login> {
 
                             TextButton(
                               onPressed: () {
-                                Navigator.pushNamed(
+                                Navigator.pushReplacementNamed(
                                   context,
                                   Register.routeName,
                                 );

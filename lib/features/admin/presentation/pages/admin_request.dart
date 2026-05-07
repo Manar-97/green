@@ -19,6 +19,32 @@ class _AdminRequestsPageState extends State<AdminRequestsPage> {
     context.read<AdminCubit>().startRealtime(); // ✅ أهم سطر
   }
 
+  void _confirmDelete(BuildContext context, String requestId) {
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: const Text("حذف الطلب"),
+        content: const Text("هل أنت متأكد أنك تريد حذف الطلب؟"),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text("إلغاء"),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+              context.read<AdminCubit>().deleteRequest(requestId);
+            },
+            child: const Text(
+              "حذف",
+              style: TextStyle(color: Colors.red),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -71,6 +97,9 @@ class _AdminRequestsPageState extends State<AdminRequestsPage> {
                 status: r.status.name,
                 onApprove: () {
                   context.read<AdminCubit>().approve(r.requestId, r.userId);
+                },
+                onDelete: () {
+                  _confirmDelete(context, r.requestId);
                 },
               );
             },

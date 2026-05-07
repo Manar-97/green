@@ -17,7 +17,7 @@ class _UserHomeState extends State<UserHome> {
 
   final pages = [RequestScreen(), MyRequestsScreen(), ProfileScreen()];
 
-  final titles = const ["اطلب جمع النفايات 🌿", "طلباتي ♻️", "ملفي الشخصي 🌿"];
+  final titles = const ["طلب جمع النفايات 🌿", "طلباتي ♻️", "ملفي الشخصي 🌿"];
 
   @override
   Widget build(BuildContext context) {
@@ -32,7 +32,7 @@ class _UserHomeState extends State<UserHome> {
             style: TextStyle(
               color: Colors.white,
               fontSize: 25.sp,
-              fontWeight: FontWeight.bold,
+              fontWeight: FontWeight.w500,
             ),
           ),
           centerTitle: true,

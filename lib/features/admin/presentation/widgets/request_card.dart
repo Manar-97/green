@@ -9,6 +9,7 @@ class RequestCard extends StatelessWidget {
   final String requestDate;
   final String status;
   final VoidCallback? onApprove;
+  final VoidCallback? onDelete;
 
   const RequestCard({
     super.key,
@@ -18,6 +19,7 @@ class RequestCard extends StatelessWidget {
     required this.requestDate,
     required this.status,
     this.onApprove,
+    this.onDelete,
   });
 
   String formatDate(String date) {
@@ -46,12 +48,22 @@ class RequestCard extends StatelessWidget {
             Text("الوقت: ${formatDate(requestDate)}"),
           ],
         ),
-        trailing: ElevatedButton(
-          onPressed: isApproved ? null : onApprove,
-          style: ElevatedButton.styleFrom(
-            backgroundColor: isApproved ? Colors.green : Colors.blue,
-          ),
-          child: Text(isApproved ? "تم" : "قبول"),
+        trailing: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            IconButton(
+              icon: const Icon(Icons.delete, color: Colors.red),
+              onPressed: onDelete,
+            ),
+
+            ElevatedButton(
+              onPressed: isApproved ? null : onApprove,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: isApproved ? Colors.green : Colors.blue,
+              ),
+              child: Text(isApproved ? "تم" : "قبول"),
+            ),
+          ],
         ),
       ),
     );

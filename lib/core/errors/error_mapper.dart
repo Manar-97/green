@@ -16,7 +16,7 @@ class ErrorMapper {
       print("💬 No internet connection");
       print("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
 
-      return NetworkException("No internet connection");
+      return NetworkAppException("No internet connection");
     }
 
     if (error is TimeoutException) {
@@ -24,7 +24,7 @@ class ErrorMapper {
       print("💬 Request timeout");
       print("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
 
-      return NetworkException("Request timeout");
+      return NetworkAppException("Request timeout");
     }
 
     // ---------------- AUTH ----------------
@@ -37,7 +37,7 @@ class ErrorMapper {
       print("💡 MAPPED: $msg");
       print("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
 
-      return AuthException(msg);
+      return AuthAppException(msg);
     }
 
     // ---------------- DATABASE ----------------
@@ -50,7 +50,7 @@ class ErrorMapper {
       print("💡 MAPPED: $msg");
       print("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
 
-      return DatabaseException(msg);
+      return DatabaseAppException(msg);
     }
 
     // ---------------- STORAGE ----------------
@@ -63,7 +63,7 @@ class ErrorMapper {
       print("💡 MAPPED: $msg");
       print("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
 
-      return StorageException(msg);
+      return StorageAppException(msg);
     }
 
     // ---------------- UNKNOWN ----------------
@@ -76,21 +76,189 @@ class ErrorMapper {
 
   // ================= AUTH MAPPING =================
   static String _mapAuth(String msg) {
-    final m = msg.toLowerCase();
+    final m = msg.toLowerCase().trim();
 
-    if (m.contains("invalid login")) {
-      return "Email or password is incorrect";
+    // ==================================================
+    // LOGIN
+    // ==================================================
+
+    if (m.contains("invalid login credentials")) {
+      return "البريد الإلكتروني أو كلمة المرور غير صحيحة";
     }
 
-    if (m.contains("email not confirmed")) {
-      return "Please confirm your email first";
+    if (m.contains("invalid credentials")) {
+      return "بيانات تسجيل الدخول غير صحيحة";
     }
+
+    if (m.contains("user not found")) {
+      return "المستخدم غير موجود";
+    }
+
+    if (m.contains("invalid email")) {
+      return "البريد الإلكتروني غير صالح";
+    }
+
+    if (m.contains("email address") && m.contains("invalid")) {
+      return "صيغة البريد الإلكتروني غير صحيحة";
+    }
+
+    if (m.contains("anonymous sign-ins are disabled")) {
+      return "تسجيل الدخول غير متاح حالياً";
+    }
+
+    // ==================================================
+    // REGISTER
+    // ==================================================
 
     if (m.contains("user already registered")) {
-      return "User already exists";
+      return "هذا البريد الإلكتروني مستخدم بالفعل";
     }
 
-    return msg;
+    if (m.contains("signup is disabled")) {
+      return "إنشاء الحسابات متوقف حالياً";
+    }
+
+    if (m.contains("password should be at least")) {
+      return "كلمة المرور يجب ألا تقل عن 6 أحرف";
+    }
+
+    if (m.contains("weak password")) {
+      return "كلمة المرور ضعيفة";
+    }
+
+    if (m.contains("password is too short")) {
+      return "كلمة المرور قصيرة جداً";
+    }
+
+    if (m.contains("same password")) {
+      return "يجب إدخال كلمة مرور مختلفة";
+    }
+
+    // ==================================================
+    // EMAIL CONFIRMATION
+    // ==================================================
+
+    if (m.contains("email not confirmed")) {
+      return "يجب تأكيد البريد الإلكتروني أولاً";
+    }
+
+    if (m.contains("signup requires a valid password")) {
+      return "يرجى إدخال كلمة مرور صحيحة";
+    }
+
+    // ==================================================
+    // PASSWORD RESET
+    // ==================================================
+
+    if (m.contains("expired")) {
+      return "انتهت صلاحية الرابط";
+    }
+
+    if (m.contains("otp expired")) {
+      return "انتهت صلاحية رمز التحقق";
+    }
+
+    if (m.contains("invalid token")) {
+      return "الرابط غير صالح";
+    }
+
+    if (m.contains("token has expired")) {
+      return "انتهت صلاحية الجلسة";
+    }
+
+    if (m.contains("session expired")) {
+      return "انتهت صلاحية الجلسة، سجل الدخول مرة أخرى";
+    }
+
+    if (m.contains("same_password")) {
+      return "لا يمكن استخدام نفس كلمة المرور القديمة";
+    }
+
+    // ==================================================
+    // GOOGLE AUTH
+    // ==================================================
+
+    if (m.contains("provider is not enabled")) {
+      return "تسجيل الدخول بجوجل غير مفعل";
+    }
+
+    if (m.contains("oauth")) {
+      return "حدث خطأ أثناء تسجيل الدخول بجوجل";
+    }
+
+    if (m.contains("identity not linked")) {
+      return "هذا الحساب غير مرتبط";
+    }
+
+    // ==================================================
+    // PERMISSIONS
+    // ==================================================
+
+    if (m.contains("permission denied")) {
+      return "ليس لديك صلاحية للوصول";
+    }
+
+    if (m.contains("access denied")) {
+      return "تم رفض الوصول";
+    }
+
+    if (m.contains("not authorized")) {
+      return "غير مصرح لك بتنفيذ هذا الإجراء";
+    }
+
+    // ==================================================
+    // RATE LIMIT
+    // ==================================================
+
+    if (m.contains("rate limit")) {
+      return "عدد المحاولات كبير جداً، حاول لاحقاً";
+    }
+
+    if (m.contains("too many requests")) {
+      return "تم إرسال طلبات كثيرة، حاول لاحقاً";
+    }
+
+    if (m.contains("security purposes")) {
+      return "تم إيقاف الطلب مؤقتاً لأسباب أمنية";
+    }
+
+    // ==================================================
+    // NETWORK
+    // ==================================================
+
+    if (m.contains("network")) {
+      return "تحقق من اتصال الإنترنت";
+    }
+
+    if (m.contains("socket")) {
+      return "لا يوجد اتصال بالإنترنت";
+    }
+
+    if (m.contains("timeout")) {
+      return "انتهت مهلة الاتصال، حاول مرة أخرى";
+    }
+
+    // ==================================================
+    // SERVER
+    // ==================================================
+
+    if (m.contains("internal server error")) {
+      return "حدث خطأ في الخادم";
+    }
+
+    if (m.contains("database error")) {
+      return "حدث خطأ في قاعدة البيانات";
+    }
+
+    if (m.contains("unexpected_failure")) {
+      return "حدث خطأ غير متوقع";
+    }
+
+    // ==================================================
+    // DEFAULT
+    // ==================================================
+
+    return "حدث خطأ غير متوقع";
   }
 
   // ================= DATABASE MAPPING =================

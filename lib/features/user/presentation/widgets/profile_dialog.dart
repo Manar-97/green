@@ -77,7 +77,7 @@ class ProfileDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Dialog(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.r)),
       child: Padding(
         padding: EdgeInsets.all(20.h),
         child: SingleChildScrollView(
