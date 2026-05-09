@@ -5,7 +5,6 @@ class RequestModel {
   final String userId;
   final String name;
   final String phone;
-  final String nationalId;
   final String address;
   final String wasteType;
   final RequestStatus status;
@@ -16,7 +15,6 @@ class RequestModel {
     required this.userId,
     required this.name,
     required this.phone,
-    required this.nationalId,
     required this.address,
     required this.wasteType,
     required this.status,
@@ -29,7 +27,6 @@ class RequestModel {
       userId: json['user_id']?.toString() ?? '',
       name: json['name']?.toString() ?? '',
       phone: json['phone']?.toString() ?? '',
-      nationalId: json['national_id']?.toString() ?? '',
       address: json['address']?.toString() ?? '',
       wasteType: json['waste_type']?.toString() ?? '',
       status: json['status'] == 'approved'
@@ -45,7 +42,6 @@ class RequestModel {
       "user_id": userId,
       "name": name,
       "phone": phone,
-      "national_id": nationalId,
       "address": address,
       "waste_type": wasteType,
       "status": status.name, // 👈 مهم
@@ -69,7 +65,6 @@ class RequestModel {
       userId: userId ?? this.userId,
       name: name ?? this.name,
       phone: phone ?? this.phone,
-      nationalId: nationalId ?? this.nationalId,
       address: address ?? this.address,
       wasteType: wasteType ?? this.wasteType,
       status: status ?? this.status,

@@ -157,11 +157,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                         value: user.phone,
                                       ),
                                       buildInfoCard(
-                                        icon: Icons.badge,
-                                        title: "الرقم القومي",
-                                        value: user.nationalId,
-                                      ),
-                                      buildInfoCard(
                                         icon: Icons.star,
                                         title: "النقاط",
                                         value: user.score.toString(),

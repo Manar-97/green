@@ -16,7 +16,6 @@ class RequestRepositoryImpl implements RequestRepository {
     required String wasteType,
     required String name,
     required String phone,
-    required String nationalId,
     required String address,
   }) async {
     try {
@@ -30,7 +29,6 @@ class RequestRepositoryImpl implements RequestRepository {
         "request_day": now.toIso8601String().split("T")[0],
         "name": name,
         "phone": phone,
-        "national_id": nationalId,
         "address": address,
       };
 
@@ -47,7 +45,6 @@ class RequestRepositoryImpl implements RequestRepository {
           "id": userId,
           "name": name,
           "phone": phone,
-          "national_id": nationalId,
           "address": address,
           "score": 0,
         });

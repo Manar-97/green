@@ -5,7 +5,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'core/di/di.dart';
-import 'core/utils/connectivity_service.dart';
 import 'core/utils/deep_link_service.dart';
 import 'features/admin/presentation/cubit/admin_cubit.dart';
 import 'features/admin/presentation/pages/admin_home.dart';
@@ -73,7 +72,6 @@ class MyApp extends StatelessWidget {
               colorScheme: ColorScheme.fromSeed(seedColor: Colors.green),
               useMaterial3: true,
             ),
-            //home: const Splash(), // 🔥 أهم سطر
             routes: {
               Splash.routeName: (_) => const Splash(),
               Login.routeName: (_) => const Login(),

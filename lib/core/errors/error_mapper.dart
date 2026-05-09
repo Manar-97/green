@@ -110,7 +110,10 @@ class ErrorMapper {
     // REGISTER
     // ==================================================
 
-    if (m.contains("user already registered")) {
+    if (m.contains("email_exists") ||
+        m.contains("email address already in use") ||
+        m.contains("user already registered") ||
+        m.contains("email already")) {
       return "هذا البريد الإلكتروني مستخدم بالفعل";
     }
 

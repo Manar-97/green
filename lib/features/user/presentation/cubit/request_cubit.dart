@@ -45,7 +45,6 @@ class RequestCubit extends Cubit<RequestState> {
     required String wasteType,
     required String name,
     required String phone,
-    required String nationalId,
     required String address,
   }) async {
     emit(state.copyWith(isSubmitting: true));
@@ -78,7 +77,6 @@ class RequestCubit extends Cubit<RequestState> {
         wasteType: wasteType,
         name: name,
         phone: phone,
-        nationalId: nationalId,
         address: address,
       );
 

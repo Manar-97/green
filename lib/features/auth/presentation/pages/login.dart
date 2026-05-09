@@ -95,10 +95,10 @@ class _LoginState extends State<Login> {
                   }
                 },
                 builder: (context, state) {
-                  final isLoading =
-                      state is AuthLoading || state is AuthGoogleLoading;
-
+                  final isLoading = state is AuthLoading;
+                  final isGoogleLoading = state is AuthGoogleLoading;
                   return SingleChildScrollView(
+                    physics: NeverScrollableScrollPhysics(),
                     keyboardDismissBehavior:
                         ScrollViewKeyboardDismissBehavior.onDrag,
                     child: ConstrainedBox(
@@ -189,14 +189,21 @@ class _LoginState extends State<Login> {
                                 onPressed: () {
                                   context.read<AuthCubit>().loginWithGoogle();
                                 },
-                                icon: Image.asset('assets/g.png', height: 26.h),
+                                icon: isGoogleLoading
+                                    ? SizedBox(
+                                        height: 20,
+                                        width: 20,
+                                        child: CircularProgressIndicator(
+                                          strokeWidth: 2,
+                                        ),
+                                      )
+                                    : Image.asset('assets/g.png', height: 26.h),
                                 label: Text(
                                   "تسجيل باستخدام Gmail",
                                   style: TextStyle(fontSize: 16.sp),
                                 ),
                               ),
                             ),
-
                             TextButton(
                               onPressed: () {
                                 Navigator.pushReplacementNamed(

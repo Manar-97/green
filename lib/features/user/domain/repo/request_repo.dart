@@ -7,7 +7,6 @@ abstract class RequestRepository {
     required String wasteType,
     required String name,
     required String phone,
-    required String nationalId,
     required String address,
   });
   Future<List<RequestModel>> getMyRequests(String userId);

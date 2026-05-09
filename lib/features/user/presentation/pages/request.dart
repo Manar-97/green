@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:green/core/widgets/app_style.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../../core/widgets/app_dialog.dart';
+import '../../../auth/presentation/cubit/auth_cubit.dart';
 import '../cubit/profile_cubit.dart';
 import '../cubit/request_cubit.dart';
 import '../cubit/request_state.dart';
@@ -19,10 +20,10 @@ class RequestScreen extends StatefulWidget {
 }
 
 class _RequestScreenState extends State<RequestScreen> {
-  String selectedType = '';
+  Set<String> selectedType = {};
 
   final nameController = TextEditingController();
-  final nidController = TextEditingController();
+  // final profileController = TextEditingController();
   final phoneController = TextEditingController();
   final addressController = TextEditingController();
 
@@ -36,13 +37,9 @@ class _RequestScreenState extends State<RequestScreen> {
     final user = Supabase.instance.client.auth.currentUser;
     if (user == null) return;
 
-    final profile = await Supabase.instance.client
-        .from('profiles')
-        .select()
-        .eq('id', user.id)
-        .maybeSingle();
+    final profile = await context.read<AuthCubit>().getProfile(user.id);
 
-    if (!mounted) return; // 👈 مهم جدًا
+    if (!mounted) return;
 
     if (profile == null) {
       Future.microtask(() {
@@ -52,14 +49,8 @@ class _RequestScreenState extends State<RequestScreen> {
           builder: (_) => ProfileDialog(
             nameController: nameController,
             phoneController: phoneController,
-            nidController: nidController,
             addressController: addressController,
-            onSaved: () {
-              final userId = Supabase.instance.client.auth.currentUser?.id;
-              if (userId != null && mounted) {
-                context.read<ProfileCubit>().loadProfile(userId);
-              }
-            },
+            onSaved: () {},
           ),
         );
       });
@@ -67,11 +58,46 @@ class _RequestScreenState extends State<RequestScreen> {
       loadUserData(profile);
     }
   }
+  // Future<void> checkProfile() async {
+  //   final user = Supabase.instance.client.auth.currentUser;
+  //   if (user == null) return;
+  //
+  //   final profile = await Supabase.instance.client
+  //       .from('profiles')
+  //       .select()
+  //       .eq('id', user.id)
+  //       .maybeSingle();
+  //
+  //   if (!mounted) return; // 👈 مهم جدًا
+  //
+  //   if (profile == null) {
+  //     Future.microtask(() {
+  //       showDialog(
+  //         context: context,
+  //         barrierDismissible: false,
+  //         builder: (_) => ProfileDialog(
+  //           nameController: nameController,
+  //           // profileController: profileController,
+  //           phoneController: phoneController,
+  //           addressController: addressController,
+  //           onSaved: () {
+  //             final userId = Supabase.instance.client.auth.currentUser?.id;
+  //             if (userId != null && mounted) {
+  //               context.read<ProfileCubit>().loadProfile(userId);
+  //             }
+  //           },
+  //         ),
+  //       );
+  //     });
+  //   } else {
+  //     loadUserData(profile);
+  //   }
+  // }
 
   void loadUserData(Map data) {
     nameController.text = data['name'] ?? '';
+    // profileController.text = data['email'] ?? '';
     phoneController.text = data['phone'] ?? '';
-    nidController.text = data['national_id'] ?? '';
     addressController.text = data['address'] ?? '';
   }
 
@@ -96,25 +122,24 @@ class _RequestScreenState extends State<RequestScreen> {
       showAppDialog(context, title: "تنبيه", message: "اختار نوع المخلفات");
       return;
     }
+    final wasteTypesString = selectedType.join(', ');
+
     await context.read<RequestCubit>().submitRequest(
-      wasteType: selectedType,
+      wasteType: wasteTypesString,
       name: nameController.text,
       phone: phoneController.text,
-      nationalId: nidController.text,
       address: addressController.text,
     );
     print("📤 SUBMIT CLICKED");
-    print("TYPE => $selectedType");
+    print("TYPE => $wasteTypesString");
     print("NAME => ${nameController.text}");
     print("PHONE => ${phoneController.text}");
-    print("NID => ${nidController.text}");
     print("ADDRESS => ${addressController.text}");
   }
 
   @override
   void dispose() {
     nameController.dispose();
-    nidController.dispose();
     phoneController.dispose();
     addressController.dispose();
     super.dispose();
@@ -179,26 +204,62 @@ class _RequestScreenState extends State<RequestScreen> {
                   SizedBox(height: 10.h),
                   Wrap(
                     spacing: 10.w,
+                    runSpacing: 10.h,
                     children: [
                       WasteTypeChip(
                         text: "ورق",
-                        isSelected: selectedType == "ورق",
-                        onTap: () => setState(() => selectedType = "ورق"),
+                        isSelected: selectedType.contains("ورق"),
+                        onTap: () {
+                          setState(() {
+                            if (selectedType.contains("ورق")) {
+                              selectedType.remove("ورق");
+                            } else {
+                              selectedType.add("ورق");
+                            }
+                          });
+                        },
                       ),
+
                       WasteTypeChip(
                         text: "بلاستيك",
-                        isSelected: selectedType == "بلاستيك",
-                        onTap: () => setState(() => selectedType = "بلاستيك"),
+                        isSelected: selectedType.contains("بلاستيك"),
+                        onTap: () {
+                          setState(() {
+                            if (selectedType.contains("بلاستيك")) {
+                              selectedType.remove("بلاستيك");
+                            } else {
+                              selectedType.add("بلاستيك");
+                            }
+                          });
+                        },
                       ),
+
                       WasteTypeChip(
                         text: "معدن",
-                        isSelected: selectedType == "معدن",
-                        onTap: () => setState(() => selectedType = "معدن"),
+                        isSelected: selectedType.contains("معدن"),
+                        onTap: () {
+                          setState(() {
+                            if (selectedType.contains("معدن")) {
+                              selectedType.remove("معدن");
+                            } else {
+                              selectedType.add("معدن");
+                            }
+                          });
+                        },
                       ),
+
                       WasteTypeChip(
                         text: "أخرى",
-                        isSelected: selectedType == "أخرى",
-                        onTap: () => setState(() => selectedType = "أخرى"),
+                        isSelected: selectedType.contains("أخرى"),
+                        onTap: () {
+                          setState(() {
+                            if (selectedType.contains("أخرى")) {
+                              selectedType.remove("أخرى");
+                            } else {
+                              selectedType.add("أخرى");
+                            }
+                          });
+                        },
                       ),
                     ],
                   ),
@@ -207,12 +268,6 @@ class _RequestScreenState extends State<RequestScreen> {
                     controller: nameController,
                     label: "الاسم",
                     icon: Icons.person,
-                  ),
-                  CustomTextField(
-                    controller: nidController,
-                    label: "الرقم القومي",
-                    icon: Icons.badge,
-                    isNumber: true,
                   ),
                   CustomTextField(
                     controller: phoneController,

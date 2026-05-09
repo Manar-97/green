@@ -14,7 +14,7 @@ class AuthRepoImpl implements AuthRepository {
     try {
       await remote.signIn(email: email, password: password);
     } catch (e) {
-      throw ErrorMapper.map(e);
+      rethrow;
     }
   }
 
@@ -23,7 +23,7 @@ class AuthRepoImpl implements AuthRepository {
     try {
       await remote.signInWithGoogle();
     } catch (e) {
-      throw ErrorMapper.map(e);
+      rethrow;
     }
   }
 
@@ -32,7 +32,7 @@ class AuthRepoImpl implements AuthRepository {
     try {
       await remote.signUp(email: email, password: password);
     } catch (e) {
-      throw ErrorMapper.map(e);
+      rethrow;
     }
   }
 
@@ -41,7 +41,7 @@ class AuthRepoImpl implements AuthRepository {
     try {
       await remote.signOut();
     } catch (e) {
-      throw ErrorMapper.map(e);
+      rethrow;
     }
   }
 
@@ -53,7 +53,7 @@ class AuthRepoImpl implements AuthRepository {
     try {
       await remote.sendResetPassword(email);
     } catch (e) {
-      throw ErrorMapper.map(e);
+      rethrow;
     }
   }
 
@@ -62,7 +62,7 @@ class AuthRepoImpl implements AuthRepository {
     try {
       await remote.updatePassword(password);
     } catch (e) {
-      throw ErrorMapper.map(e);
+      rethrow;
     }
   }
 }

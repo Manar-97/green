@@ -2,7 +2,6 @@ class UserModel {
   final String id;
   final String name;
   final String phone;
-  final String nationalId;
   final String address;
   final int score;
 
@@ -10,7 +9,6 @@ class UserModel {
     required this.id,
     required this.name,
     required this.phone,
-    required this.nationalId,
     required this.address,
     required this.score,
   });
@@ -20,7 +18,6 @@ class UserModel {
       id: json['id'] ?? '',
       name: json['name'] ?? '',
       phone: json['phone'] ?? '',
-      nationalId: json['national_id'] ?? '',
       address: json['address'] ?? '',
       score: json['score'] ?? 0,
     );
@@ -38,7 +35,6 @@ class UserModel {
       id: id ?? this.id,
       name: name ?? this.name,
       phone: phone ?? this.phone,
-      nationalId: nationalId ?? this.nationalId,
       address: address ?? this.address,
       score: score ?? this.score,
     );

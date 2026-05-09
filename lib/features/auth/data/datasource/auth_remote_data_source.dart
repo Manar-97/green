@@ -9,18 +9,22 @@ class AuthRemoteDataSource {
     required String email,
     required String password,
   }) async {
-    final response = await supabase.auth.signUp(
-      email: email,
-      password: password,
-    );
+    try {
+      final response = await supabase.auth.signUp(
+        email: email,
+        password: password,
+      );
 
-    final user = response.user;
+      final user = response.user;
 
-    if (user == null) {
-      throw Exception("User not created");
+      if (response.session == null && user == null) {
+        throw Exception("Signup failed");
+      }
+
+      return user!;
+    } on supaBase.AuthException catch (e) {
+      throw e;
     }
-
-    return user;
   }
 
   Future<void> signIn({required String email, required String password}) async {

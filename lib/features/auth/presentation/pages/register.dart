@@ -33,9 +33,14 @@ class _RegisterState extends State<Register> {
           showAppDialog(
             context,
             title: "تم إنشاء الحساب",
-            message: "افحص الإيميل 📩",
+            message: "افحص الإيميل لتأكيده📩",
             isSuccess: true,
           );
+          Future.delayed(const Duration(seconds: 2), () {
+            if (context.mounted) {
+              Navigator.pushReplacementNamed(context, Login.routeName);
+            }
+          });
         }
 
         if (state is AuthError) {
@@ -124,6 +129,7 @@ class _RegisterState extends State<Register> {
                           );
                           emailController.clear();
                           passwordController.clear();
+                          confirmController.clear();
                         },
                       ),
                       TextButton(
