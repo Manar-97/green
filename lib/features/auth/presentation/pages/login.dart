@@ -70,14 +70,11 @@ class _LoginState extends State<Login> {
               child: BlocConsumer<AuthCubit, AuthState>(
                 listener: (context, state) {
                   print("STATE = $state");
-
                   // 🔵 Navigation
                   _navigate(state);
-
                   // ❌ Errors
                   if (state is AuthError) {
                     final msg = state.message.toLowerCase();
-
                     if (msg.contains("rate limit")) {
                       showAppDialog(
                         context,
@@ -117,17 +114,13 @@ class _LoginState extends State<Login> {
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
-
                             SizedBox(height: 50.h),
-
                             AppTextField(
                               controller: emailController,
                               label: "الإيميل",
                               icon: Icons.email,
                             ),
-
                             SizedBox(height: 16.h),
-
                             AppTextField(
                               controller: passwordController,
                               label: "كلمة المرور",
@@ -146,7 +139,6 @@ class _LoginState extends State<Login> {
                                 },
                               ),
                             ),
-
                             Align(
                               alignment: Alignment.centerLeft,
                               child: TextButton(
@@ -159,9 +151,7 @@ class _LoginState extends State<Login> {
                                 child: const Text("نسيت كلمة المرور؟"),
                               ),
                             ),
-
                             SizedBox(height: 20.h),
-
                             AuthButton(
                               text: "تسجيل الدخول",
                               loading: isLoading,
@@ -174,9 +164,7 @@ class _LoginState extends State<Login> {
                                 );
                               },
                             ),
-
                             SizedBox(height: 16.h),
-
                             // Google login
                             SizedBox(
                               width: double.infinity,

@@ -42,19 +42,23 @@ Future<void> main() async {
   );
   testSupabaseDNS();
   configureDependencies();
+  final authCubit = getIt<AuthCubit>();
+  authCubit.listenToAuthChanges(); // 👈 هنا أهم سطر
   final deepLink = DeepLinkService(navigatorKey);
   await deepLink.init();
-  runApp(MyApp());
+  runApp(MyApp(authCubit: authCubit));
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  final AuthCubit authCubit;
+  const MyApp({super.key, required this.authCubit});
 
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider(create: (_) => getIt<AuthCubit>()),
+        BlocProvider.value(value: authCubit),
+        // BlocProvider(create: (_) => getIt<AuthCubit>()),
         BlocProvider(create: (_) => getIt<RequestCubit>()),
         BlocProvider(create: (_) => getIt<ProfileCubit>()),
         BlocProvider(create: (_) => getIt<AdminCubit>()),

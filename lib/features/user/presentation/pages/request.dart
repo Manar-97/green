@@ -5,7 +5,6 @@ import 'package:green/core/widgets/app_style.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../../core/widgets/app_dialog.dart';
 import '../../../auth/presentation/cubit/auth_cubit.dart';
-import '../cubit/profile_cubit.dart';
 import '../cubit/request_cubit.dart';
 import '../cubit/request_state.dart';
 import '../widgets/custom_text_field.dart';
@@ -26,6 +25,20 @@ class _RequestScreenState extends State<RequestScreen> {
   // final profileController = TextEditingController();
   final phoneController = TextEditingController();
   final addressController = TextEditingController();
+  bool isProfileIncomplete(Map? profile) {
+    if (profile == null) return true;
+
+    final phone = profile['phone'];
+    final address = profile['address'];
+    final name = profile['name'];
+
+    return phone == null ||
+        phone.toString().trim().isEmpty ||
+        address == null ||
+        address.toString().trim().isEmpty ||
+        name == null ||
+        name.toString().trim().isEmpty;
+  }
 
   @override
   void initState() {
@@ -41,7 +54,7 @@ class _RequestScreenState extends State<RequestScreen> {
 
     if (!mounted) return;
 
-    if (profile == null) {
+    if (isProfileIncomplete(profile)) {
       Future.microtask(() {
         showDialog(
           context: context,
@@ -55,10 +68,9 @@ class _RequestScreenState extends State<RequestScreen> {
         );
       });
     } else {
-      loadUserData(profile);
+      loadUserData(profile!);
     }
-  }
-  // Future<void> checkProfile() async {
+  } // Future<void> checkProfile() async {
   //   final user = Supabase.instance.client.auth.currentUser;
   //   if (user == null) return;
   //

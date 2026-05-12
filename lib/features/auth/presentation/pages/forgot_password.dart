@@ -60,7 +60,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
       ).showSnackBar(const SnackBar(content: Text("من فضلك أدخل الإيميل")));
       return;
     }
-
+    FocusScope.of(context).unfocus();
     context.read<AuthCubit>().sendResetPass(email);
   }
 

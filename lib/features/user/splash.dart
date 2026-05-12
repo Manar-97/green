@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-
 import '../admin/presentation/pages/admin_home.dart';
 import '../auth/presentation/cubit/auth_cubit.dart';
 import '../auth/presentation/pages/login.dart';
@@ -44,13 +43,16 @@ class _SplashState extends State<Splash> with SingleTickerProviderStateMixin {
     ).animate(CurvedAnimation(parent: _controller, curve: Curves.elasticOut));
 
     _controller.forward();
-
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       await Future.delayed(const Duration(seconds: 3));
 
       if (!mounted) return;
+      final auth = context.read<AuthCubit>();
 
-      context.read<AuthCubit>().start();
+      auth.listenToAuthChanges(); // 👈 لازم الأول
+      await Future.delayed(const Duration(seconds: 2));
+
+      auth.start(); // 👈 بعدها check session
     });
   }
 
@@ -64,6 +66,7 @@ class _SplashState extends State<Splash> with SingleTickerProviderStateMixin {
   Widget build(BuildContext context) {
     return BlocConsumer<AuthCubit, AuthState>(
       listener: (context, state) {
+        print("🔥 SPLASH STATE = $state");
         if (!mounted || _navigated) return;
 
         if (state is AuthLoggedInUser) {

@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "162707460232",
+    "project_id": "green-19eea",
+    "storage_bucket": "green-19eea.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:162707460232:android:ed272fa7787b2c2bcc0f3d",
+        "android_client_info": {
+          "package_name": "com.manar.green"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "162707460232-fg9i4qrkoahk9bi144ngs4nqjrcnl4n9.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.manar.green",
+            "certificate_hash": "fd8d1ae4738c16a65424c62a616d0a86d285548f"
+          }
+        },
+        {
+          "client_id": "162707460232-uh7apl0b5b27kqg3n12hg282gg8vl607.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC0FSMOf2Vq9ISUoh4OU70cj5zjJujDPE0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "162707460232-uh7apl0b5b27kqg3n12hg282gg8vl607.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "162707460232-bhndnt8dueqglgkkaaq8vood5e9d50g2.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.manar.green"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

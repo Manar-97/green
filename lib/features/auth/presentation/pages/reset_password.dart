@@ -48,7 +48,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
       );
       return;
     }
-
+    FocusScope.of(context).unfocus();
     context.read<AuthCubit>().updatePass(pass);
   }
 

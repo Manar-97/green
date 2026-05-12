@@ -33,7 +33,7 @@
                 <category android:name="android.intent.category.BROWSABLE" />
 
                 <data
-                    android:scheme="com.example.green"
+                    android:scheme="io.supabase.flutter"
                     android:host="login-callback" />
             </intent-filter>
 
@@ -45,7 +45,7 @@
                 <category android:name="android.intent.category.BROWSABLE" />
 
                 <data
-                    android:scheme="com.example.green"
+                    android:scheme="com.manar.green"
                     android:host="reset-callback" />
             </intent-filter>
         </activity>

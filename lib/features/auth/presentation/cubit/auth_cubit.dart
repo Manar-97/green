@@ -11,7 +11,6 @@ import '../../domain/usecases/sign_in.dart';
 import '../../domain/usecases/sign_in_with_google.dart';
 import '../../domain/usecases/sign_out.dart';
 import '../../domain/usecases/sign_up.dart';
-
 part 'auth_state.dart';
 
 @injectable
@@ -39,6 +38,7 @@ class AuthCubit extends Cubit<AuthState> {
   StreamSubscription? _authSub;
   bool isDeepLinkFlow = false;
   AuthState? _lastEmitted;
+  bool _isHandlingAuth = false;
   bool _handledRecovery = false;
 
   void _emitOnce(AuthState state) {
@@ -48,24 +48,7 @@ class AuthCubit extends Cubit<AuthState> {
     emit(state);
   }
 
-  // Future<Map<String, dynamic>?> getProfile(String userId) async {
-  //   try {
-  //     final res = await _client
-  //         .from('profiles')
-  //         .select()
-  //         .eq('id', userId)
-  //         .limit(1);
-  //
-  //     if (res.isEmpty) return null;
-  //
-  //     return res.first;
-  //   } catch (e) {
-  //     if (e is supabase.PostgrestException && e.code == 'PGRST116') {
-  //       return null;
-  //     }
-  //     rethrow;
-  //   }
-  // }
+  // ================= Get Profile =================
   Future<Map<String, dynamic>?> getProfile(String userId) async {
     try {
       debugPrint("🔎 [PROFILE] getProfile for $userId");
@@ -78,17 +61,21 @@ class AuthCubit extends Cubit<AuthState> {
 
       debugPrint("📦 raw response = $res");
 
-      if (res == null) return null;
-      debugPrint("⚠️ profile NOT FOUND");
+      if (res == null) {
+        debugPrint("⚠️ PROFILE NOT FOUND");
+        return null;
+      }
 
+      debugPrint("✅ PROFILE FOUND");
       return res;
     } catch (e, st) {
       debugPrint("❌ getProfile ERROR = $e");
       debugPrint("📌 STACK = $st");
       rethrow;
     }
-  } // ================= ROLE =================
+  }
 
+  // ================= ROLE =================
   Future<String> _getRole(String userId) async {
     try {
       debugPrint("━━━━━━━━ GET ROLE START ━━━━━━━━");
@@ -117,21 +104,6 @@ class AuthCubit extends Cubit<AuthState> {
       return 'user';
     }
   }
-  // Future<String> _getRole(String userId) async {
-  //   try {
-  //     final res = await _client
-  //         .from('profiles')
-  //         .select('role')
-  //         .eq('id', userId)
-  //         .limit(1);
-  //
-  //     if (res.isEmpty) return 'user';
-  //
-  //     return (res.first['role'] ?? 'user').toString().toLowerCase();
-  //   } catch (e) {
-  //     return 'user';
-  //   }
-  // }
 
   // ================= AUTH LISTENER =================
   void listenToAuthChanges() {
@@ -140,76 +112,70 @@ class AuthCubit extends Cubit<AuthState> {
     debugPrint("🚀 AUTH LISTENER STARTED");
 
     _authSub = _client.auth.onAuthStateChange.listen((data) async {
+      final event = data.event;
       final session = data.session;
 
-      debugPrint("📡 EVENT: ${data.event}");
+      debugPrint("━━━━━━━━ AUTH EVENT ━━━━━━━━");
+      debugPrint("📡 EVENT: $event");
       debugPrint("👤 USER: ${session?.user.id}");
 
-      if (session == null) {
+      if (event == supabase.AuthChangeEvent.initialSession) {
+        debugPrint("🟡 IGNORE INITIAL SESSION IN SPLASH FLOW");
+        return;
+      }
+      // ================= LOGOUT =================
+      if (session == null || event == supabase.AuthChangeEvent.signedOut) {
+        debugPrint("🔴 LOGOUT DETECTED");
         emit(AuthLoggedOut());
         return;
       }
 
-      final user = session.user;
-
-      final profile = await getProfile(user.id);
-
-      if (profile == null) {
-        debugPrint("⚠️ creating profile...");
-
-        await _client.from('profiles').upsert({
-          "id": user.id,
-          "email": user.email ?? "",
-          "name": user.userMetadata?['full_name'] ?? "",
-          "phone": "",
-          "address": "",
-          "score": 0,
-          "role": "user",
-        });
+      // ================= PASSWORD RECOVERY =================
+      if (event == supabase.AuthChangeEvent.passwordRecovery) {
+        debugPrint("🔐 PASSWORD RECOVERY");
+        emit(AuthPasswordRecovery());
+        return;
       }
 
-      final role = await _getRole(user.id);
+      // ================= SIGNED IN =================
+      if (event == supabase.AuthChangeEvent.signedIn) {
+        final user = session.user;
 
-      emit(role == 'admin' ? AuthLoggedInAdmin() : AuthLoggedInUser());
+        debugPrint("🟢 SIGNED IN");
+
+        try {
+          final profile = await getProfile(user.id);
+
+          if (profile == null) {
+            debugPrint("⚠️ PROFILE NOT FOUND → creating");
+
+            await _client.from('profiles').upsert({
+              "id": user.id,
+              "email": user.email ?? "",
+              "name": user.userMetadata?['full_name'] ?? "",
+              "phone": "",
+              "address": "",
+              "score": 0,
+              "role": "user",
+            });
+          }
+
+          final role = await _getRole(user.id);
+
+          debugPrint("🎯 ROLE = $role");
+
+          if (role == "admin") {
+            emit(AuthLoggedInAdmin());
+          } else {
+            emit(AuthLoggedInUser());
+          }
+        } catch (e) {
+          debugPrint("❌ LISTENER ERROR: $e");
+          emit(AuthError(message: e.toString(), type: ErrorType.auth));
+        }
+      }
     });
   }
-  // void listenToAuthChanges() {
-  //   _authSub?.cancel(); // مهم
-  //   try {
-  //     _authSub = _client.auth.onAuthStateChange.listen((data) async {
-  //       final event = data.event;
-  //       final session = data.session;
-  //
-  //       debugPrint("🔔 AUTH EVENT: $event");
-  //
-  //       // ❌ مهم جدًا: تجاهل initialSession في Google flow
-  //       if (event == supabase.AuthChangeEvent.initialSession) {
-  //         debugPrint("⛔ IGNORING initialSession (handled in Splash)");
-  //         return;
-  //       }
-  //
-  //       if (event == supabase.AuthChangeEvent.passwordRecovery) {
-  //         if (_handledRecovery) return;
-  //         debugPrint("🔑 RECOVERY EVENT");
-  //         _handledRecovery = true;
-  //         _emitOnce(AuthPasswordRecovery());
-  //         return;
-  //       }
-  //
-  //       if (session == null) {
-  //         _emitOnce(AuthLoggedOut());
-  //         return;
-  //       }
-  //
-  //       final role = await _getRole(session.user.id);
-  //
-  //       _emitOnce(role == 'admin' ? AuthLoggedInAdmin() : AuthLoggedInUser());
-  //     });
-  //   } catch (e) {
-  //     debugPrint("❌ listener error: $e");
-  //     emit(AuthLoggedInUser()); // fallback مهم جدًا
-  //   }
-  // }
 
   // ================= LOGIN =================
   Future<void> login(String email, String password) async {
@@ -245,56 +211,16 @@ class AuthCubit extends Cubit<AuthState> {
       emit(_mapError(e));
     }
   }
-  // Future<void> login(String email, String password) async {
-  //   debugPrint("🔐 LOGIN START");
-  //   debugPrint("📧 EMAIL: $email");
-  //
-  //   emit(AuthLoading());
-  //
-  //   try {
-  //     await signIn(email, password);
-  //
-  //     debugPrint("✅ SIGN IN DONE");
-  //
-  //     final user = _client.auth.currentUser;
-  //
-  //     debugPrint("👤 CURRENT USER: ${user?.id}");
-  //
-  //     if (user == null) {
-  //       debugPrint("❌ NO USER AFTER LOGIN");
-  //       emit(AuthError(message: "User not found", type: ErrorType.auth));
-  //       return;
-  //     }
-  //
-  //     debugPrint("⏳ FETCH ROLE...");
-  //
-  //     final role = await _getRole(user.id);
-  //
-  //     debugPrint("🎯 ROLE: $role");
-  //
-  //     emit(role == 'admin' ? AuthLoggedInAdmin() : AuthLoggedInUser());
-  //
-  //     debugPrint("🏁 LOGIN FLOW DONE");
-  //   } catch (e) {
-  //     debugPrint("❌ LOGIN ERROR: $e");
-  //     emit(_mapError(e));
-  //   }
-  // }
 
   // ================= GOOGLE LOGIN =================
   Future<void> loginWithGoogle() async {
     debugPrint("🟡 GOOGLE LOGIN START");
-
     emit(AuthGoogleLoading());
-    await signInWithGoogle();
-
     try {
       await signInWithGoogle();
 
       debugPrint("🚀 OAuth launched");
-
-      // ❌ ممنوع تعتمد على currentUser هنا
-      debugPrint("⏳ waiting for auth listener...");
+      debugPrint("⏳ waiting for listener...");
     } catch (e, st) {
       debugPrint("❌ GOOGLE ERROR: $e");
       debugPrint("STACK: $st");
@@ -302,6 +228,7 @@ class AuthCubit extends Cubit<AuthState> {
     }
   }
 
+  // ================= Register =================
   Future<void> register(String email, String password) async {
     emit(AuthLoading());
 
@@ -331,7 +258,6 @@ class AuthCubit extends Cubit<AuthState> {
   }
 
   // ================= RESET PASSWORD =================
-
   bool _isResetSent = false;
 
   Future<void> sendResetPass(String email) async {
@@ -363,6 +289,7 @@ class AuthCubit extends Cubit<AuthState> {
     }
   }
 
+  // ================= Logout =================
   Future<void> logout() async {
     debugPrint("🚨 LOGOUT CALLED");
     _handledRecovery = false;
@@ -399,24 +326,23 @@ class AuthCubit extends Cubit<AuthState> {
   // ================= START =================
   void start() {
     _handledRecovery = false; // 👈 مهم جدًا
+    debugPrint("🚀 AUTH START CALLED");
     final session = _client.auth.currentSession;
 
     if (session == null) {
+      debugPrint("🔴 NO SESSION");
       emit(AuthLoggedOut());
       return;
     }
-
-    final user = session.user;
-
-    _getRole(user.id).then((role) {
-      if (role == 'admin') {
-        emit(AuthLoggedInAdmin());
-      } else {
-        emit(AuthLoggedInUser());
-      }
+    debugPrint("🟢 SESSION FOUND");
+    // بس check role مرة واحدة
+    _getRole(session.user.id).then((role) {
+      debugPrint("🎯 ROLE = $role");
+      emit(role == 'admin' ? AuthLoggedInAdmin() : AuthLoggedInUser());
     });
   }
 
+  // ================= Close =================
   @override
   Future<void> close() {
     _authSub?.cancel();

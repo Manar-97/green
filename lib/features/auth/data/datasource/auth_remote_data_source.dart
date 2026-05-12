@@ -34,7 +34,7 @@ class AuthRemoteDataSource {
   Future<void> signInWithGoogle() async {
     await supabase.auth.signInWithOAuth(
       supaBase.OAuthProvider.google,
-      redirectTo: 'com.example.green://login-callback',
+      redirectTo: 'io.supabase.flutter://login-callback',
       authScreenLaunchMode: supaBase.LaunchMode.externalApplication,
     );
   }
@@ -46,7 +46,7 @@ class AuthRemoteDataSource {
   Future<void> sendResetPassword(String email) async {
     await supabase.auth.resetPasswordForEmail(
       email,
-      redirectTo: 'com.example.green://reset-callback',
+      redirectTo: 'com.manar.green://reset-callback',
     );
   }
 
