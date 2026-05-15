@@ -35,10 +35,7 @@ class _AdminRequestsPageState extends State<AdminRequestsPage> {
               Navigator.pop(context);
               context.read<AdminCubit>().deleteRequest(requestId);
             },
-            child: const Text(
-              "حذف",
-              style: TextStyle(color: Colors.red),
-            ),
+            child: const Text("حذف", style: TextStyle(color: Colors.red)),
           ),
         ],
       ),
@@ -84,25 +81,30 @@ class _AdminRequestsPageState extends State<AdminRequestsPage> {
             return const Center(child: Text("لا يوجد طلبات"));
           }
 
-          return ListView.builder(
-            itemCount: requests.length,
-            itemBuilder: (context, i) {
-              final r = requests[i];
-
-              return RequestCard(
-                name: r.name,
-                wasteType: r.wasteType,
-                phone: r.phone,
-                requestDate: r.requestDate,
-                status: r.status.name,
-                onApprove: () {
-                  context.read<AdminCubit>().approve(r.requestId, r.userId);
-                },
-                onDelete: () {
-                  _confirmDelete(context, r.requestId);
-                },
-              );
+          return RefreshIndicator(
+            onRefresh: () async {
+              await context.read<AdminCubit>().loadInitialData();
             },
+            child: ListView.builder(
+              itemCount: requests.length,
+              itemBuilder: (context, i) {
+                final r = requests[i];
+
+                return RequestCard(
+                  name: r.name,
+                  wasteType: r.wasteType,
+                  phone: r.phone,
+                  requestDate: r.requestDate,
+                  status: r.status.name,
+                  onApprove: () {
+                    context.read<AdminCubit>().approve(r.requestId, r.userId);
+                  },
+                  onDelete: () {
+                    _confirmDelete(context, r.requestId);
+                  },
+                );
+              },
+            ),
           );
         },
       ),

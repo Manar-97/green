@@ -144,24 +144,39 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
                                 // 📦 Info Cards (Expanded علشان تملى المساحة)
                                 Expanded(
-                                  child: ListView(
-                                    children: [
-                                      buildInfoCard(
-                                        icon: Icons.home,
-                                        title: "العنوان",
-                                        value: user.address,
-                                      ),
-                                      buildInfoCard(
-                                        icon: Icons.phone,
-                                        title: "الهاتف",
-                                        value: user.phone,
-                                      ),
-                                      buildInfoCard(
-                                        icon: Icons.star,
-                                        title: "النقاط",
-                                        value: user.score.toString(),
-                                      ),
-                                    ],
+                                  child: RefreshIndicator(
+                                    onRefresh: () async {
+                                      final userId = Supabase
+                                          .instance
+                                          .client
+                                          .auth
+                                          .currentUser
+                                          ?.id;
+                                      if (userId != null) {
+                                        await context
+                                            .read<ProfileCubit>()
+                                            .loadProfile(userId);
+                                      }
+                                    },
+                                    child: ListView(
+                                      children: [
+                                        buildInfoCard(
+                                          icon: Icons.home,
+                                          title: "العنوان",
+                                          value: user.address,
+                                        ),
+                                        buildInfoCard(
+                                          icon: Icons.phone,
+                                          title: "الهاتف",
+                                          value: user.phone,
+                                        ),
+                                        buildInfoCard(
+                                          icon: Icons.star,
+                                          title: "النقاط",
+                                          value: user.score.toString(),
+                                        ),
+                                      ],
+                                    ),
                                   ),
                                 ),
                               ],

@@ -22,7 +22,6 @@ class _RequestScreenState extends State<RequestScreen> {
   Set<String> selectedType = {};
 
   final nameController = TextEditingController();
-  // final profileController = TextEditingController();
   final phoneController = TextEditingController();
   final addressController = TextEditingController();
   bool isProfileIncomplete(Map? profile) {
@@ -70,45 +69,9 @@ class _RequestScreenState extends State<RequestScreen> {
     } else {
       loadUserData(profile!);
     }
-  } // Future<void> checkProfile() async {
-  //   final user = Supabase.instance.client.auth.currentUser;
-  //   if (user == null) return;
-  //
-  //   final profile = await Supabase.instance.client
-  //       .from('profiles')
-  //       .select()
-  //       .eq('id', user.id)
-  //       .maybeSingle();
-  //
-  //   if (!mounted) return; // 👈 مهم جدًا
-  //
-  //   if (profile == null) {
-  //     Future.microtask(() {
-  //       showDialog(
-  //         context: context,
-  //         barrierDismissible: false,
-  //         builder: (_) => ProfileDialog(
-  //           nameController: nameController,
-  //           // profileController: profileController,
-  //           phoneController: phoneController,
-  //           addressController: addressController,
-  //           onSaved: () {
-  //             final userId = Supabase.instance.client.auth.currentUser?.id;
-  //             if (userId != null && mounted) {
-  //               context.read<ProfileCubit>().loadProfile(userId);
-  //             }
-  //           },
-  //         ),
-  //       );
-  //     });
-  //   } else {
-  //     loadUserData(profile);
-  //   }
-  // }
-
+  }
   void loadUserData(Map data) {
     nameController.text = data['name'] ?? '';
-    // profileController.text = data['email'] ?? '';
     phoneController.text = data['phone'] ?? '';
     addressController.text = data['address'] ?? '';
   }
@@ -162,6 +125,9 @@ class _RequestScreenState extends State<RequestScreen> {
     return BlocConsumer<RequestCubit, RequestState>(
       listener: (context, state) {
         if (state.success) {
+          setState(() {
+            selectedType.clear();
+          });
           showAppDialog(
             context,
             title: "تم",

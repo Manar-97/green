@@ -84,7 +84,12 @@ class AdminUsersPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text("المستخدمين")),
+      floatingActionButton: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 20.w),
+        child: ExportButton(onTap: () => exportAndShare(context)),
+      ),
 
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       body: BlocBuilder<AdminCubit, AdminState>(
         builder: (context, state) {
           if (state.isLoadingUsers && state.users.isEmpty) {
@@ -95,22 +100,20 @@ class AdminUsersPage extends StatelessWidget {
             return const Center(child: Text("لا يوجد مستخدمين"));
           }
 
-          return Stack(
-            children: [
-              ListView.builder(
-                itemCount: state.users.length,
-                itemBuilder: (context, i) {
-                  final u = state.users[i];
-                  return UserCard(name: u.name, phone: u.phone, score: u.score);
-                },
+          return RefreshIndicator(
+            onRefresh: () async {
+              await context.read<AdminCubit>().loadInitialData();
+            },
+            child: ListView.builder(
+              padding: EdgeInsets.only(
+                bottom: 80.h, // 👈 مهم عشان الزرار
               ),
-              Positioned(
-                bottom: 30.h,
-                left: 20.w,
-                right: 20.w,
-                child: ExportButton(onTap: () => exportAndShare(context)),
-              ),
-            ],
+              itemCount: state.users.length,
+              itemBuilder: (context, i) {
+                final u = state.users[i];
+                return UserCard(name: u.name, phone: u.phone, score: u.score);
+              },
+            ),
           );
         },
       ),

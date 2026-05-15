@@ -68,49 +68,57 @@ class _MyRequestsScreenState extends State<MyRequestsScreen> {
               return const Center(child: Text("لا يوجد طلبات بعد 🌱"));
             }
 
-            return ListView.builder(
-              padding: EdgeInsets.all(12.w),
-              itemCount: state.requests.length,
-              itemBuilder: (context, i) {
-                final req = state.requests[i];
+            return RefreshIndicator(
+              onRefresh: () async {
+                final userId = Supabase.instance.client.auth.currentUser?.id;
+                if (userId != null) {
+                  await context.read<RequestCubit>().fetchRequests(userId);
+                }
+              },
+              child: ListView.builder(
+                padding: EdgeInsets.all(12.w),
+                itemCount: state.requests.length,
+                itemBuilder: (context, i) {
+                  final req = state.requests[i];
 
-                return Card(
-                  elevation: 3,
-                  margin: EdgeInsets.only(bottom: 12.h),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(15.r),
-                  ),
-                  child: ListTile(
-                    leading: const Icon(Icons.recycling, color: Colors.green),
+                  return Card(
+                    elevation: 3,
+                    margin: EdgeInsets.only(bottom: 12.h),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(15.r),
+                    ),
+                    child: ListTile(
+                      leading: const Icon(Icons.recycling, color: Colors.green),
 
-                    title: Text(
-                      req.wasteType,
-                      style: const TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                    subtitle: Text(
-                      formatDate(DateTime.parse(req.requestDate)),
-                      style: TextStyle(fontWeight: FontWeight.w500),
-                    ),
-                    trailing: Container(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 10.w,
-                        vertical: 6.h,
+                      title: Text(
+                        req.wasteType,
+                        style: const TextStyle(fontWeight: FontWeight.bold),
                       ),
-                      decoration: BoxDecoration(
-                        color: getStatusColor(req.status).withOpacity(0.15),
-                        borderRadius: BorderRadius.circular(8.r),
+                      subtitle: Text(
+                        formatDate(DateTime.parse(req.requestDate)),
+                        style: TextStyle(fontWeight: FontWeight.w500),
                       ),
-                      child: Text(
-                        getStatusText(req.status),
-                        style: TextStyle(
-                          color: getStatusColor(req.status),
-                          fontWeight: FontWeight.bold,
+                      trailing: Container(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 10.w,
+                          vertical: 6.h,
+                        ),
+                        decoration: BoxDecoration(
+                          color: getStatusColor(req.status).withOpacity(0.15),
+                          borderRadius: BorderRadius.circular(8.r),
+                        ),
+                        child: Text(
+                          getStatusText(req.status),
+                          style: TextStyle(
+                            color: getStatusColor(req.status),
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                );
-              },
+                  );
+                },
+              ),
             );
           },
         ),

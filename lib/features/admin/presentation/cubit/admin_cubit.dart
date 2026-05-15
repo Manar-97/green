@@ -39,6 +39,7 @@ class AdminCubit extends Cubit<AdminState> {
     );
 
     _userSub = repo.watchUsers().listen((data) {
+      data.sort((a, b) => b.score.compareTo(a.score));
       emit(
         state.copyWith(
           users: data,
@@ -70,7 +71,7 @@ class AdminCubit extends Cubit<AdminState> {
     try {
       final requests = await repo.getAllRequests();
       final users = await repo.getAllUsers();
-
+      users.sort((a, b) => b.score.compareTo(a.score));
       emit(
         state.copyWith(
           isLoadingRequests: false,
