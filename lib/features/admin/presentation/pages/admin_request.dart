@@ -48,12 +48,13 @@ class _AdminRequestsPageState extends State<AdminRequestsPage> {
       appBar: AppBar(
         title: const Text("الطلبات"),
         actions: [
+          // ✅ زرار اختيار التاريخ
           IconButton(
             icon: const Icon(Icons.filter_list),
             onPressed: () async {
               final picked = await showDatePicker(
                 context: context,
-                firstDate: DateTime(2020),
+                firstDate: DateTime(2026),
                 lastDate: DateTime.now(),
               );
               context.read<AdminCubit>().setFilterDay(picked);
@@ -77,7 +78,7 @@ class _AdminRequestsPageState extends State<AdminRequestsPage> {
                       date.month == state.selectedDay!.month &&
                       date.day == state.selectedDay!.day;
                 }).toList();
-          if (state.requests.isEmpty) {
+          if (requests.isEmpty) {
             return const Center(child: Text("لا يوجد طلبات"));
           }
 
@@ -91,11 +92,13 @@ class _AdminRequestsPageState extends State<AdminRequestsPage> {
                 final r = requests[i];
 
                 return RequestCard(
+                  key: ValueKey('${r.requestId}_${r.status.name}'),
+                  requestId: r.requestId,
                   name: r.name,
                   wasteType: r.wasteType,
                   phone: r.phone,
                   requestDate: r.requestDate,
-                  status: r.status.name,
+                  status: r.status,
                   onApprove: () {
                     context.read<AdminCubit>().approve(r.requestId, r.userId);
                   },

@@ -13,6 +13,8 @@ class AdminState {
   final List<UserModel> users;
   final DateTime? selectedDay; // 👈 الفلتر
 
+  final Set<String> loadingIds;
+
   const AdminState({
     this.isLoadingRequests = false,
     this.isLoadingUsers = false,
@@ -21,6 +23,7 @@ class AdminState {
     this.requests = const [],
     this.users = const [],
     this.selectedDay,
+    this.loadingIds = const {},
   });
 
   AdminState copyWith({
@@ -32,6 +35,7 @@ class AdminState {
     List<UserModel>? users,
     bool clearError = false,
     DateTime? selectedDay,
+    Set<String>? loadingIds,
   }) {
     return AdminState(
       isLoadingRequests: isLoadingRequests ?? this.isLoadingRequests,
@@ -40,7 +44,10 @@ class AdminState {
       errorType: clearError ? null : (errorType ?? this.errorType),
       requests: requests ?? this.requests,
       users: users ?? this.users,
-      selectedDay: selectedDay,
+      loadingIds: loadingIds ?? this.loadingIds,
+
+      // ✅ المهم
+      selectedDay: selectedDay ?? this.selectedDay,
     );
   }
 }

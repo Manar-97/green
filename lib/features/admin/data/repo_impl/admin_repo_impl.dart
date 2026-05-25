@@ -14,8 +14,10 @@ class AdminRepoImpl implements AdminRepository {
   @override
   Future<List<RequestModel>> getAllRequests() async {
     try {
-      final res = await supabase.from('requests').select();
-
+      final res = await supabase
+          .from('requests')
+          .select()
+          .order('request_date', ascending: false);
       return (res as List).map((e) => RequestModel.fromJson(e)).toList();
     } catch (e) {
       throw ErrorMapper.map(e);
@@ -25,40 +27,66 @@ class AdminRepoImpl implements AdminRepository {
   @override
   Future<void> approveRequest(String requestId, String userId) async {
     try {
-      // هات الطلب
+      // هات الطلب الحالي
       final req = await supabase
           .from('requests')
           .select()
           .eq('id', requestId)
           .single();
 
-      // لو approved بالفعل متعملش حاجة
+      print("REQUEST => $req");
+
+      // لو متوافق عليه بالفعل اخرج
       if (req['status'] == 'approved') return;
-      // حدث حالة الطلب
+
+      // حدث الحالة
       await supabase
           .from('requests')
           .update({'status': 'approved'})
           .eq('id', requestId);
 
-      // هات الاسكور الحالي
-      final profile = await supabase
-          .from('profiles')
-          .select('score')
-          .eq('id', userId)
-          .single();
-
-      final currentScore = profile['score'] ?? 0;
-
-      // زود 10
-      await supabase
-          .from('profiles')
-          .update({'score': currentScore + 10})
-          .eq('id', userId);
+      // زود الاسكور باستخدام RPC
+      await supabase.rpc('increment_user_score', params: {'uid': userId});
     } catch (e) {
       print("APPROVE ERROR => $e");
       throw ErrorMapper.map(e);
     }
-  }
+  } // Future<void> approveRequest(String requestId, String userId) async {
+  //   try {
+  //     // هات الطلب
+  //     final req = await supabase
+  //         .from('requests')
+  //         .select()
+  //         .eq('id', requestId)
+  //         .single();
+  //
+  //     // لو approved بالفعل متعملش حاجة
+  //     if (req['status'] == 'approved') return;
+  //     // حدث حالة الطلب
+  //     await supabase
+  //         .from('requests')
+  //         .update({'status': 'approved'})
+  //         .eq('id', requestId);
+  //
+  //     // هات الاسكور الحالي
+  //     final profile = await supabase
+  //         .from('profiles')
+  //         .select('score')
+  //         .eq('id', userId)
+  //         .single();
+  //
+  //     final currentScore = profile['score'] ?? 0;
+  //
+  //     // زود 10
+  //     await supabase
+  //         .from('profiles')
+  //         .update({'score': currentScore + 10})
+  //         .eq('id', userId);
+  //   } catch (e) {
+  //     print("APPROVE ERROR => $e");
+  //     throw ErrorMapper.map(e);
+  //   }
+  // }
 
   @override
   Future<List<UserModel>> getAllUsers() async {
@@ -88,19 +116,14 @@ class AdminRepoImpl implements AdminRepository {
 
   @override
   Stream<List<RequestModel>> watchRequests() {
-    late Stream<List<RequestModel>> stream;
-
-    stream = supabase
+    return supabase
         .from('requests')
         .stream(primaryKey: ['id'])
-        .map((data) => data.map((e) => RequestModel.fromJson(e)).toList())
-        .handleError((error) {
-          print("Realtime error: $error");
-
-          // ❗ هنا مش بنكسر الستريم
+        .order('request_date', ascending: false)
+        .map((data) {
+          final requests = data.map((e) => RequestModel.fromJson(e)).toList();
+          return requests;
         });
-
-    return stream;
   }
 
   @override

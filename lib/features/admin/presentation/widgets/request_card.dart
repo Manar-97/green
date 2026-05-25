@@ -1,18 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
 
+import '../../../user/data/models/request_dm.dart';
+import '../cubit/admin_cubit.dart';
+
 class RequestCard extends StatelessWidget {
+  final String requestId;
   final String name;
   final String wasteType;
   final String phone;
   final String requestDate;
-  final String status;
+  final RequestStatus status;
   final VoidCallback? onApprove;
   final VoidCallback? onDelete;
 
   const RequestCard({
     super.key,
+    required this.requestId,
     required this.name,
     required this.wasteType,
     required this.phone,
@@ -33,8 +39,10 @@ class RequestCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isApproved = status == "approved";
-
+    final isApproved = status == RequestStatus.approved;
+    final isLoading = context.select(
+      (AdminCubit c) => c.state.loadingIds.contains(requestId),
+    );
     return Card(
       margin: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15.r)),
@@ -61,7 +69,9 @@ class RequestCard extends StatelessWidget {
               style: ElevatedButton.styleFrom(
                 backgroundColor: isApproved ? Colors.green : Colors.blue,
               ),
-              child: Text(isApproved ? "تم" : "قبول"),
+              child: isLoading
+                  ? CircularProgressIndicator(strokeWidth: 2)
+                  : Text(isApproved ? "تم" : "قبول"),
             ),
           ],
         ),

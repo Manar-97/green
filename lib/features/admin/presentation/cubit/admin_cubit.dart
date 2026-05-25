@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
-
 import '../../../../core/utils/network_guard.dart';
 import '../../../../core/errors/error_mapper.dart';
 import '../../domain/repo/admin_repo.dart';
@@ -22,7 +21,6 @@ class AdminCubit extends Cubit<AdminState> {
       emit(state.copyWith(error: "❌ مفيش إنترنت"));
       return;
     }
-
     _subscribe();
   }
 
@@ -30,24 +28,77 @@ class AdminCubit extends Cubit<AdminState> {
     _reqSub?.cancel();
     _userSub?.cancel();
 
-    _reqSub = repo.watchRequests().listen(
-      (data) {
-        emit(state.copyWith(requests: data, error: null));
-      },
-      onError: (_) => _reconnect(),
-      onDone: () => _reconnect(),
-    );
-
-    _userSub = repo.watchUsers().listen((data) {
-      data.sort((a, b) => b.score.compareTo(a.score));
+    _reqSub = repo.watchRequests().listen((data) {
       emit(
         state.copyWith(
-          users: data,
-          isLoadingUsers: false, // 🔥 مهم جدًا
+          requests: List.from(data),
+          isLoadingRequests: false,
           error: null,
         ),
       );
     }, onError: (_) => _reconnect());
+    _userSub = repo.watchUsers().listen((data) {
+      data.sort((a, b) => b.score.compareTo(a.score));
+
+      emit(state.copyWith(users: data, isLoadingUsers: false, error: null));
+    }, onError: (_) => _reconnect());
+  }
+
+  void setFilterDay(DateTime? day) {
+    emit(state.copyWith(selectedDay: day));
+  }
+
+  Future<void> loadInitialData() async {
+    emit(state.copyWith(isLoadingRequests: true, isLoadingUsers: true));
+
+    try {
+      final requests = await repo.getAllRequests();
+      final users = await repo.getAllUsers();
+
+      users.sort((a, b) => b.score.compareTo(a.score));
+
+      emit(
+        state.copyWith(
+          requests: requests,
+          users: users,
+          isLoadingRequests: false,
+          isLoadingUsers: false,
+          error: null,
+        ),
+      );
+    } catch (e) {
+      final err = ErrorMapper.map(e);
+
+      emit(
+        state.copyWith(
+          isLoadingRequests: false,
+          isLoadingUsers: false,
+          error: err.message,
+        ),
+      );
+    }
+  }
+
+  Future<void> deleteRequest(String requestId) async {
+    try {
+      await repo.deleteRequest(requestId);
+    } catch (e) {
+      emit(state.copyWith(error: ErrorMapper.map(e).message));
+    }
+  }
+
+  Future<void> approve(String requestId, String userId) async {
+    try {
+      // add loading
+      final newLoading = Set<String>.from(state.loadingIds)..add(requestId);
+      emit(state.copyWith(loadingIds: newLoading));
+      await repo.approveRequest(requestId, userId);
+      // remove loading
+      final updated = Set<String>.from(state.loadingIds)..remove(requestId);
+      emit(state.copyWith(loadingIds: updated));
+    } catch (e) {
+      emit(state.copyWith(error: ErrorMapper.map(e).message));
+    }
   }
 
   void _reconnect() async {
@@ -65,76 +116,6 @@ class AdminCubit extends Cubit<AdminState> {
     _reconnecting = false;
   }
 
-  Future<void> loadInitialData() async {
-    emit(state.copyWith(isLoadingRequests: true, isLoadingUsers: true));
-
-    try {
-      final requests = await repo.getAllRequests();
-      final users = await repo.getAllUsers();
-      users.sort((a, b) => b.score.compareTo(a.score));
-      emit(
-        state.copyWith(
-          isLoadingRequests: false,
-          isLoadingUsers: false,
-          requests: requests,
-          users: users,
-        ),
-      );
-    } catch (e) {
-      final err = ErrorMapper.map(e);
-
-      emit(
-        state.copyWith(
-          isLoadingRequests: false,
-          isLoadingUsers: false,
-          error: err.message,
-        ),
-      );
-    }
-  }
-
-  void setFilterDay(DateTime? day) {
-    emit(state.copyWith(selectedDay: day));
-  }
-
-  Future<void> approve(String requestId, String userId) async {
-    emit(state.copyWith(isLoadingUsers: true));
-
-    try {
-      await repo.approveRequest(requestId, userId);
-    } catch (e) {
-      final err = ErrorMapper.map(e);
-      emit(state.copyWith(isLoadingUsers: false, error: err.message));
-    }
-  }
-
-  Future<void> deleteRequest(String requestId) async {
-    try {
-      emit(state.copyWith(isLoadingRequests: true));
-
-      await repo.deleteRequest(requestId);
-
-      // تحديث الداتا بعد الحذف
-      final requests = await repo.getAllRequests();
-
-      emit(
-        state.copyWith(
-          isLoadingRequests: false,
-          requests: requests,
-          error: null,
-        ),
-      );
-    } catch (e) {
-      final err = ErrorMapper.map(e);
-
-      emit(
-        state.copyWith(
-          isLoadingRequests: false,
-          error: err.message,
-        ),
-      );
-    }
-  }
   @override
   Future<void> close() {
     _reqSub?.cancel();
