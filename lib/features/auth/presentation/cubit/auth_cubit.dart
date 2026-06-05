@@ -155,7 +155,6 @@ class AuthCubit extends Cubit<AuthState> {
               "name": user.userMetadata?['full_name'] ?? "",
               "phone": "",
               "address": "",
-              "score": 0,
               "role": "user",
             });
           }

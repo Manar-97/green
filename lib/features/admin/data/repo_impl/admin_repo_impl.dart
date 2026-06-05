@@ -1,6 +1,5 @@
 import 'package:injectable/injectable.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-
 import '../../../../core/utils/safe_stream.dart';
 import '../../../user/data/models/request_dm.dart';
 import '../../../user/data/models/user_dm.dart';
@@ -51,42 +50,7 @@ class AdminRepoImpl implements AdminRepository {
       print("APPROVE ERROR => $e");
       throw ErrorMapper.map(e);
     }
-  } // Future<void> approveRequest(String requestId, String userId) async {
-  //   try {
-  //     // هات الطلب
-  //     final req = await supabase
-  //         .from('requests')
-  //         .select()
-  //         .eq('id', requestId)
-  //         .single();
-  //
-  //     // لو approved بالفعل متعملش حاجة
-  //     if (req['status'] == 'approved') return;
-  //     // حدث حالة الطلب
-  //     await supabase
-  //         .from('requests')
-  //         .update({'status': 'approved'})
-  //         .eq('id', requestId);
-  //
-  //     // هات الاسكور الحالي
-  //     final profile = await supabase
-  //         .from('profiles')
-  //         .select('score')
-  //         .eq('id', userId)
-  //         .single();
-  //
-  //     final currentScore = profile['score'] ?? 0;
-  //
-  //     // زود 10
-  //     await supabase
-  //         .from('profiles')
-  //         .update({'score': currentScore + 10})
-  //         .eq('id', userId);
-  //   } catch (e) {
-  //     print("APPROVE ERROR => $e");
-  //     throw ErrorMapper.map(e);
-  //   }
-  // }
+  }
 
   @override
   Future<List<UserModel>> getAllUsers() async {
